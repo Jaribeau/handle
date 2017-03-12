@@ -4,17 +4,27 @@
 import cv2
 import threading
 import random
+import time
 
 class CameraManager:
 
+	# Make this private 
 	def __init__(self):
-		self.ballTrackingEnabled = True
+		self.ballTrackingEnabled = False
 		self.xBallPosition = 0;
 		self.yBallPosition = 0;
+		self.lastUpdated = time.localtime();
+		self.ballRadius = 3;	# NOTE: This is a magic number and should be moved to a "physical properties" class
+
+
+	# Make singleton
+	# def getInstance(self):
 
 
 
 	def startBallTracking(self):
+		# Handle case where already started 
+
 		self.ballTrackingEnabled = True
 
 		# Start ball tracking thread
@@ -22,10 +32,10 @@ class CameraManager:
 		t1.daemon = True
 		t1.start()
 
-		# Listen for keyboard input to end ball tracking
-		t2 = threading.Thread(target = self.readKeyboardInput())
-		t2.daemon = True
-		t2.start()
+		# Listen for keyboard input to manually trigger ball tracking commands
+		# t2 = threading.Thread(target = self.readKeyboardInput())
+		# t2.daemon = True
+		# t2.start()
 
 
 
@@ -34,12 +44,14 @@ class CameraManager:
 
 
 
+	# Only to be run on its own thread
 	def trackBall(self):
 		# Broadcast a stream of values, how?
-		print "Entering loop"
+		print "Entering loop \n"
 		while self.ballTrackingEnabled:
 			self.xBallPosition = random.randint(0, 10) # temp placeholder for vision tracking results
 			self.yBallPosition = random.randint(0, 10) # temp placeholder for vision tracking results
+			self.lastUpdated = time.clock()
 			# print self.xBallPosition, self.yBallPosition
 
 		print "Returning..."
@@ -64,7 +76,13 @@ class CameraManager:
 
 
 	def getBallPosition(self):
-		return [self.xBallPosition, self.yBallPosition]
+		# return [self.xBallPosition, self.yBallPosition, time.strftime("%a, %d %b %Y %H:%M:%S +0000", self.lastUpdated)]
+		return [self.xBallPosition, self.yBallPosition, self.lastUpdated]
+
+
+
+	def getBallRadius(self):
+		return self.ballRadius
 
 
 

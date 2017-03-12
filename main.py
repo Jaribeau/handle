@@ -1,8 +1,12 @@
 #main
 
-from CameraManager import CameraManager
+# from CameraManager import CameraManager
 
-vision = CameraManager()
+# vision = CameraManager()
+# vision.startBallTracking()
 
-vision.startBallTracking()
-# vision.stopBallTracking()
+
+from GameManager import GameManager
+
+game = GameManager()
+game.startGame()
