@@ -25,7 +25,7 @@ class Obstacle:
 
 
 	def startMovement(self):
-		# Start ball tracking thread
+		# Start obstacle movement thread
 		self.keepMoving = True
 		t1 = threading.Thread(target = self.moveObstacle)
 		t1.daemon = True
