@@ -6,15 +6,16 @@ import threading
 import random
 import time
 
+
 class CameraManager:
 
 	# Make this private 
 	def __init__(self):
 		self.ballTrackingEnabled = False
-		self.xBallPosition = 0;
-		self.yBallPosition = 0;
-		self.lastUpdated = time.localtime();
-		self.ballRadius = 3;	# NOTE: This is a magic number and should be moved to a "physical properties" class
+		self.xBallPosition = 0
+		self.yBallPosition = 0
+		self.lastUpdated = time.localtime()
+		self.ballRadius = 3  # NOTE: This is a magic number and should be moved to a "physical properties" class
 
 
 	# Make singleton
@@ -22,13 +23,13 @@ class CameraManager:
 
 
 
-	def startBallTracking(self):
+	def start_ball_tracking(self):
 		# Handle case where already started 
 
 		self.ballTrackingEnabled = True
 
 		# Start ball tracking thread
-		t1 = threading.Thread(target = self.trackBall)
+		t1 = threading.Thread(target = self.track_ball)
 		t1.daemon = True
 		t1.start()
 
@@ -39,13 +40,13 @@ class CameraManager:
 
 
 
-	def stopBallTracking(self):
+	def stop_ball_tracking(self):
 		self.ballTrackingEnabled = False
 
 
 
 	# Only to be run on its own thread
-	def trackBall(self):
+	def track_ball(self):
 		# Broadcast a stream of values, how?
 		print "Entering loop \n"
 		while self.ballTrackingEnabled:
@@ -59,36 +60,36 @@ class CameraManager:
 
 
 
-	def readKeyboardInput(self):
+	def read_keyboard_input(self):
 		key = raw_input('q = Exit, p = Get Ball Position \n')
 		print "Key entered: " + key
 
 		if key == 'q':
-			self.stopBallTracking()
+			self.stop_ball_tracking()
 
 		elif key == 'p':
-			print self.getBallPosition()
-			self.readKeyboardInput()
+			print self.get_ball_position()
+			self.read_keyboard_input()
 
 		else:
-			self.readKeyboardInput()
+			self.read_keyboard_input()
 
 
 
-	def getBallPosition(self):
+	def get_ball_position(self):
 		# return [self.xBallPosition, self.yBallPosition, time.strftime("%a, %d %b %Y %H:%M:%S +0000", self.lastUpdated)]
 		return [self.xBallPosition, self.yBallPosition, self.lastUpdated]
 
 
 
-	def getBallRadius(self):
+	def get_ball_radius(self):
 		return self.ballRadius
 
 
 
-	def initializeCamera(path):
+	def initialize_camera(path):
 		# TODO: Might need to add code here to gracefully handle a failed camera inialization
-		if path == None:
+		if path is None:
 			camera = cv2.VideoCapture(0)
 		else:
 			camera = cv2.VideoCapture(path)

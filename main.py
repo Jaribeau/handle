@@ -1,4 +1,4 @@
-#main
+# main
 
 # from CameraManager import CameraManager
 
@@ -9,4 +9,4 @@
 from GameManager import GameManager
 
 game = GameManager()
-game.startGame()
+game.start_game()

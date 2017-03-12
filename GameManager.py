@@ -3,6 +3,7 @@
 from CameraManager import CameraManager
 from Obstacle import Obstacle
 
+
 class GameManager:
 
 
@@ -14,9 +15,9 @@ class GameManager:
 
 
 
-	def startGame(self):
-		self.cameraManager.startBallTracking()
-		self.obstacle.startMovement()
+	def start_game(self):
+		self.cameraManager.start_ball_tracking()
+		self.obstacle.start_movement()
 		self.timeRemaining = 60000
 		self.gameOn = True
 
@@ -26,7 +27,7 @@ class GameManager:
 
 		while self.gameOn:
 
-			if self.isCollision(self.cameraManager, self.obstacle):
+			if self.is_collision(self.cameraManager, self.obstacle):
 				print "------- Collision!!! --------"
 				self.gameOn = False
 
@@ -37,13 +38,13 @@ class GameManager:
 
 
 
-	def isCollision( self, cameraManager, obstacle):
+	def is_collision(self, cameraManager, obstacle):
 		# Get some time syncronization checking going on here
 		# 	i.e. isStale? within each respective class
 
 		# Also may need collision type - i.e. collisionType() instead of collidesWith()
 
-		if self.obstacle.collidesWith( self.cameraManager.getBallPosition(), self.cameraManager.getBallRadius() ):
+		if self.obstacle.collides_with(self.cameraManager.get_ball_position(), self.cameraManager.get_ball_radius()):
 			return True
 		else:
 			return False
