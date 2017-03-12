@@ -17,7 +17,10 @@ class Obstacle:
 	def collides_with(self, position, radius):
 		x = position[0]
 		y = position[1]
-		if (self.xPosition - radius) <= x <= (self.xPosition + radius):	 # NOTE: Currently only checks x axis
+		print "Obst: (", self.xPosition, ", ", self.yPosition, ")"
+		print "Ball: (", x, ", ", y, ")"
+		print "--"
+		if ((self.xPosition - radius) <= x <= (self.xPosition + radius)) and ((self.yPosition - radius) <= y <= (self.yPosition + radius)):
 			return True
 
 		else:
@@ -36,11 +39,12 @@ class Obstacle:
 
 	def stop_movement(self):
 		self.keepMoving = False
+		print "Obstacle motion stopped."
 
 
 
 	# Only to be run on its own thread
 	def move_obstacle(self):
 		while self.keepMoving:  # Random motion until stopMovement called
-			self.xPosition += random.randint(-1, 1)
-			self.xPosition += random.randint(-1, 1)
+			self.xPosition = random.randint(0, 10)
+			self.yPosition = random.randint(0, 10)

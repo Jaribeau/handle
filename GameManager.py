@@ -16,35 +16,34 @@ class GameManager:
 
 
 	def start_game(self):
+		print "Starting Game!!!"
+		print "----------------"
 		self.cameraManager.start_ball_tracking()
+		self.cameraManager.register(self)
 		self.obstacle.start_movement()
 		self.timeRemaining = 60000
 		self.gameOn = True
 
-
-		print "Starting Game!!!"
-		print "----------------"
-
 		while self.gameOn:
+			self.timeRemaining -= 1
 
-			if self.is_collision(self.cameraManager, self.obstacle):
-				print "------- Collision!!! --------"
-				self.gameOn = False
 
-			else:
-				print "."
 
+	def end_game(self):
 		print "Game Over."
+		self.cameraManager.stop_ball_tracking()
+		self.cameraManager.unregister_all()
+		self.obstacle.stop_movement()
+		self.timeRemaining = 0
+		self.gameOn = False
 
 
 
-	def is_collision(self, cameraManager, obstacle):
-		# Get some time syncronization checking going on here
-		# 	i.e. isStale? within each respective class
+	# Observer function called by any observable class that this class registered to
+	def update(self, *args, **keywordargs):
 
-		# Also may need collision type - i.e. collisionType() instead of collidesWith()
+		# TODO: CHECK ARGUMENTS TO DETERMINE MESSAGE/TYPE - pass on to handlers?
+		if self.obstacle.collides_with([keywordargs.get('x'), keywordargs.get('y')], self.cameraManager.get_ball_radius()):
+			print "------- Collision!!! --------"
+			self.end_game()
 
-		if self.obstacle.collides_with(self.cameraManager.get_ball_position(), self.cameraManager.get_ball_radius()):
-			return True
-		else:
-			return False

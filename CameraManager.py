@@ -1,5 +1,5 @@
 # CameraManager
-# Singleton class for taking in camera input and 
+# Singleton class for keeping an observable coordinates of a ball, found via camera input
 
 import cv2
 import threading
@@ -16,20 +16,21 @@ class CameraManager:
 		self.yBallPosition = 0
 		self.lastUpdated = time.localtime()
 		self.ballRadius = 3  # NOTE: This is a magic number and should be moved to a "physical properties" class
+		self.observers = []
 
 
-	# Make singleton
+	# TODO: Make singleton
 	# def getInstance(self):
 
 
 
 	def start_ball_tracking(self):
-		# Handle case where already started 
+		# TODO: Handle case where already started
 
 		self.ballTrackingEnabled = True
 
 		# Start ball tracking thread
-		t1 = threading.Thread(target = self.track_ball)
+		t1 = threading.Thread(target=self.track_ball)
 		t1.daemon = True
 		t1.start()
 
@@ -47,16 +48,13 @@ class CameraManager:
 
 	# Only to be run on its own thread
 	def track_ball(self):
-		# Broadcast a stream of values, how?
-		print "Entering loop \n"
 		while self.ballTrackingEnabled:
-			self.xBallPosition = random.randint(0, 10) # temp placeholder for vision tracking results
-			self.yBallPosition = random.randint(0, 10) # temp placeholder for vision tracking results
+			self.xBallPosition = random.randint(0, 10)  # temp placeholder for vision tracking results
+			self.yBallPosition = random.randint(0, 10)  # temp placeholder for vision tracking results
 			self.lastUpdated = time.clock()
-			# print self.xBallPosition, self.yBallPosition
+			self.update_observers("Location Updated:", x=self.xBallPosition, y=self.yBallPosition, updated_at=self.lastUpdated)
 
-		print "Returning..."
-		self.ballTrackingEnabled = False
+		print "Ball tracking stopped."
 
 
 
@@ -77,7 +75,6 @@ class CameraManager:
 
 
 	def get_ball_position(self):
-		# return [self.xBallPosition, self.yBallPosition, time.strftime("%a, %d %b %Y %H:%M:%S +0000", self.lastUpdated)]
 		return [self.xBallPosition, self.yBallPosition, self.lastUpdated]
 
 
@@ -87,8 +84,27 @@ class CameraManager:
 
 
 
-	def initialize_camera(path):
-		# TODO: Might need to add code here to gracefully handle a failed camera inialization
+	# Observer Functions
+	def register(self, observer):
+		if observer not in self.observers:
+			self.observers.append(observer)
+
+	def unregister(self, observer):
+		if observer in self.observers:
+			self.observers.remove(observer)
+
+	def unregister_all(self):
+		if self.observers:
+			del self.observers[:]
+
+	def update_observers(self, *args, **keywordargs):
+		for observer in self.observers:
+			observer.update(*args, **keywordargs)
+
+
+
+	def initialize_camera(self, path):
+		# TODO: Might need to add code here to gracefully handle a failed camera initialization
 		if path is None:
 			camera = cv2.VideoCapture(0)
 		else:
