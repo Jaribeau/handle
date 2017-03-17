@@ -7,7 +7,6 @@ import time
 from LaserManager import LaserManager
 from Properties import Properties
 
-
 class ObstacleManager:
     def __init__(self):
         self.xPosition = 0
@@ -56,23 +55,22 @@ class ObstacleManager:
     # called by GameManager
     def stop_movement(self):
         self.keepMoving = False
-
-    self.laser.stop()
-    print("Obstacle motion stopped.")
+        self.laser.stop()
+        print("Obstacle motion stopped.")
 
 
 # Only to be run on its own thread
-def move_obstacle(self):
-    while self.keepMoving:  # Random motion until stopMovement called
-        # self.xPosition = random.randint(0, 10)
-        # self.yPosition = random.randint(0, 10)
+    def move_obstacle(self):
+        while self.keepMoving:  # Random motion until stopMovement called
+            # self.xPosition = random.randint(0, 10)
+            # self.yPosition = random.randint(0, 10)
 
-        self.nextX = random.random() * properties.PLAY_FIELD_WIDTH
-        self.nextY = random.random() * properties.PLAY_FIELD_LENGTH
+            self.nextX = random.random() * properties.PLAY_FIELD_WIDTH
+            self.nextY = random.random() * properties.PLAY_FIELD_LENGTH
 
-        self.laser.setPosition(self.nextX, self.nextY)
-        time.sleep(0.75)  # wait 0.75 second
-        # self.xPosition = self.nextX
+            self.laser.setPosition(self.nextX, self.nextY)
+            time.sleep(0.75)  # wait 0.75 second
+            # self.xPosition = self.nextX
         # self.yPosition = self.nextY
 
     # Only to be run on its own thread
@@ -82,9 +80,9 @@ def move_obstacle(self):
     #                time.sleep(1)
 
 
-def set_difficulty(diff):
-    if (diff == 0):
-        speed = 0.5  # m/s
-        # algorithm change?
-    else:
-        speed = 0.4  # m/s
+    def set_difficulty(diff):
+        if (diff == 0):
+            speed = 0.5  # m/s
+            # algorithm change?
+        else:
+            speed = 0.4  # m/s
