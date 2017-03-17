@@ -1,16 +1,18 @@
 # GameManager
 
-from CameraManager import CameraManager
+from BallTracker import BallTracker
 from Obstacle import Obstacle
 
 
 class GameManager:
 
 
-	def __init__(self):
-		self.cameraManager = CameraManager()
+
+	def __init__(self, time=60000, difficulty="Normal"):
+		self.ballTracker = BallTracker()
 		self.obstacle = Obstacle()
-		self.timeRemaining = 60000
+		self.timeRemaining = time
+		self.difficulty = difficulty
 		self.gameOn = False
 
 
@@ -18,8 +20,8 @@ class GameManager:
 	def start_game(self):
 		print "Starting Game!!!"
 		print "----------------"
-		self.cameraManager.start_ball_tracking()
-		self.cameraManager.register(self)
+		self.ballTracker.start_ball_tracking()
+		self.ballTracker.register(self)
 		self.obstacle.start_movement()
 		self.timeRemaining = 60000
 		self.gameOn = True
@@ -31,8 +33,8 @@ class GameManager:
 
 	def end_game(self):
 		print "Game Over."
-		self.cameraManager.stop_ball_tracking()
-		self.cameraManager.unregister_all()
+		self.ballTracker.stop_ball_tracking()
+		self.ballTracker.unregister_all()
 		self.obstacle.stop_movement()
 		self.timeRemaining = 0
 		self.gameOn = False
@@ -40,10 +42,10 @@ class GameManager:
 
 
 	# Observer function called by any observable class that this class registered to
-	def update(self, *args, **keywordargs):
+	def notify(self, *args, **keywordargs):
 
 		# TODO: CHECK ARGUMENTS TO DETERMINE MESSAGE/TYPE - pass on to handlers?
-		if self.obstacle.collides_with([keywordargs.get('x'), keywordargs.get('y')], self.cameraManager.get_ball_radius()):
+		if self.obstacle.collides_with([keywordargs.get('x'), keywordargs.get('y')], self.ballTracker.get_ball_radius()):
 			print "------- Collision!!! --------"
 			self.end_game()
 
