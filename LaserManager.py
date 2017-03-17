@@ -7,69 +7,82 @@ import time
 import sys
 import math
 
-PLAY_FIELD_WIDTH = 2
-PLAY_FIELD_LENGTH = 2
-CAM_DIST_HORI = 0.5
-CAM_DIST_VERT = 1.5
-
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(2, GPIO.OUT)
-GPIO.setup(18, GPIO.OUT)
-pwmVert = GPIO.PWM(2, 100)
-pwmHori = GPIO.PWM(18, 100)
-pwmVert.start(5)
-pwmHori.start(5)
-
-xPosition = 0
-yPosition = 0
-
-global def setPosition(x, y):
-	xPosition = x
-	yPosition = y
-
-	angles = toPolarCoords(xPosition, yPosition)
-
-	dutyhori = float(angles[0]) / 10.0 + 2.5
-	dutyvert = float(angles[1]) / 10.0 + 2.5
-
-	pwmHori.ChangeDutyCycle(dutyhori)
-	pwmVert.ChangeDutyCycle(dutyvert)
-
-global def getXPosition():
-	return xPosition
-
-global def getYPosition():
-	return yPosition
-
-global def stop():
-	pwmHori.stop()
-	pwmVert.stop()
+from Properties import Properties
 
 
+class LaserManager:
 
-def toPolarCoords(x,y):
-	myX = float(x) - (PLAY_FIELD_WIDTH/2)
-	myY = float(y) + CAM_DIST_HORI
-	myZ = CAM_DIST_VERT
+	def __init__(self):
+		GPIO.setmode(GPIO.BCM)
+		GPIO.setup(2, GPIO.OUT)
+		GPIO.setup(18, GPIO.OUT)
+		pwmVert = GPIO.PWM(2, 100)
+		pwmHori = GPIO.PWM(18, 100)
+		pwmVert.start(5)
+		pwmHori.start(5)
 
-	horiAngle = math.atan(myY/myX) # theta
-	vertAngle = math.acos(myY/math.sqrt(math.pow(myX,2),math.pow(myY,2),math.pow(myZ,2))) # phi
+		xPosition = 0
+		yPosition = 0
 
-	return horiAngle,vertAngle
+	# Used by ObstacleManager
+	def setPosition(x, y):
+		xPosition = x
+		yPosition = y
 
-# theta = horizontal angle
-# phi = vertical angle
-def toCartesianCoords(theta, phi):
-	x = (-(math.tan(theta)/math.pow(math.cos(phi),2)) + math.sqrt((math.pow(math.tan(theta),2)/math.pow(math.cos(phi),4)) - (4 + 4*math.pow(math.tan(theta),2)*CAM_DIST_VERT)))/(2+2*math.pow(math.tan(theta),2)) # Check design logbook p20-21 for equation derivation
-	y = x*math.tan(theta)
+		angles = toPolarCoords(xPosition, yPosition)
 
-	return x,y
+		dutyhori = float(angles[0]) / 10.0 + 2.5
+		dutyvert = float(angles[1]) / 10.0 + 2.5
 
-userInput = ''
-while (userInput != 'stop'):
-	userInput = input('Please enter an x and y ("x,y"):')
-	position = userInput.split(',')
+		pwmHori.ChangeDutyCycle(dutyhori)
+		pwmVert.ChangeDutyCycle(dutyvert)
 
-	setPosition(position[0], position[1])
+	# Used by ObstacleManager
+	def getXPosition():
+		return xPosition
 
-stop()
+	# Used by ObstacleManager
+	def getYPosition():
+		return yPosition
+
+	# Used by ObstacleManager
+	def stop():
+		pwmHori.stop()
+		pwmVert.stop()
+		laserSwitch(False)
+
+
+
+	def toPolarCoords(x,y):
+		myX = float(x) - (Properties.PLAY_FIELD_WIDTH/2)
+		myY = float(y) + Properties.CAM_DIST_HORI
+		myZ = Properties.CAM_DIST_VERT
+
+		horiAngle = math.atan(myY/myX) # theta
+		vertAngle = math.acos(myY/math.sqrt(math.pow(myX,2),math.pow(myY,2),math.pow(myZ,2))) # phi
+
+		return horiAngle,vertAngle
+
+	# theta = horizontal angle
+	# phi = vertical angle
+	def toCartesianCoords(theta, phi):
+		x = (-(math.tan(theta)/math.pow(math.cos(phi),2)) + math.sqrt((math.pow(math.tan(theta),2)/math.pow(math.cos(phi),4)) - (4 + 4*math.pow(math.tan(theta),2)*Properties.CAM_DIST_VERT)))/(2+2*math.pow(math.tan(theta),2)) # Check design logbook p20-21 for equation derivation
+		y = x*math.tan(theta)
+
+		return x,y
+
+	def laserSwitch(laserOn):
+		if laserOn:
+			#turn on laser
+		else:
+			#turn off laser
+
+
+	userInput = ''
+	while (userInput != 'stop'):
+		userInput = input('Please enter an x and y ("x,y"):')
+		position = userInput.split(',')
+
+		setPosition(position[0], position[1])
+
+	stop()
