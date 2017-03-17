@@ -58,6 +58,7 @@ class ObstacleManager:
 		# called by GameManager
 	def stop_movement(self):
 		self.keepMoving = False
+        self.laser.stop()
 		print "Obstacle motion stopped."
 
 
