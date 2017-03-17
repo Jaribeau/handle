@@ -76,10 +76,10 @@ class ObstacleManager:
 			#self.yPosition = self.nextY
 
 	# Only to be run on its own thread
-	def next_step(self):
-		while self.keepMoving:
-			if (self.xPosition == self.nextX and self.yPosition == self.nextY):
-                time.sleep(1)
+#	def next_step(self):
+#		while self.keepMoving:
+#			if (self.xPosition == self.nextX and self.yPosition == self.nextY):
+#                time.sleep(1)
 
 
 	def set_difficulty(diff):

@@ -73,12 +73,12 @@ class LaserManager:
 
 		return x,y
 
-	def laserSwitch(laserOn):
-		if laserOn:
-			time.sleep(1)
+#	def laserSwitch(laserOn):
+#		if laserOn:
+#			time.sleep(1)
 			#turn on laser
-		else:
-			time.sleep(1)
+#		else:
+#			time.sleep(1)
 			#turn off laser
 
 
