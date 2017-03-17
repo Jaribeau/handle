@@ -37,7 +37,7 @@ class ObstacleManager:
 		print "Obst: (", self.xPosition, ", ", self.yPosition, ")"
 		print "Ball: (", x, ", ", y, ")"
 		print "--"
-		if (!(0 < x & x < Properties.PLAY_FIELD_WIDTH & 0 < y & < Properties.PLAY_FIELD_LENGTH)):
+		if (not(0 < x and x < Properties.PLAY_FIELD_WIDTH and 0 < y and y < Properties.PLAY_FIELD_LENGTH)):
 			return True
 		elif ((self.xPosition - radius) <= x <= (self.xPosition + radius)) and ((self.yPosition - radius) <= y <= (self.yPosition + radius)):
 			return True
@@ -77,7 +77,7 @@ class ObstacleManager:
 	# Only to be run on its own thread
 	def next_step(self):
 		while self.keepMoving:
-			if (self.xPosition == self.nextX && self.yPosition == self.nextY):
+			if (self.xPosition == self.nextX AND self.yPosition == self.nextY):
 
 
 
