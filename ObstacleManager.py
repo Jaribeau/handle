@@ -7,10 +7,6 @@ import time
 from LaserManager import LaserManager
 from Properties import Properties
 
-PLAY_FIELD_WIDTH = 2
-PLAY_FIELD_LENGTH = 2
-CAM_DIST_HORI = 0.5
-CAM_DIST_VERT = 1.5
 
 class ObstacleManager:
 
@@ -20,7 +16,7 @@ class ObstacleManager:
 		self.yPosition = 0
 		self.keepMoving = False
 
-		self.speed = 0.0
+		self.speed = 0.5
 		self.xSpeed = 0.0
 		self.ySpeed = 0.0
 
@@ -31,6 +27,7 @@ class ObstacleManager:
 		self.nextY = 0.0
 
 		self.laser = LaserManager()
+		start_movement(self)
 
 
 		# called by GameManager
@@ -40,7 +37,7 @@ class ObstacleManager:
 		print "Obst: (", self.xPosition, ", ", self.yPosition, ")"
 		print "Ball: (", x, ", ", y, ")"
 		print "--"
-		if (!(0 == x == PLAY_FIELD_WIDTH && 0 == y == PLAY_FIELD_LENGTH)):
+		if (!(0 == x == Properties.PLAY_FIELD_WIDTH && 0 == y == Properties.PLAY_FIELD_LENGTH)):
 			return True
 		elif ((self.xPosition - radius) <= x <= (self.xPosition + radius)) and ((self.yPosition - radius) <= y <= (self.yPosition + radius)):
 			return True
@@ -69,8 +66,8 @@ class ObstacleManager:
 			#self.xPosition = random.randint(0, 10)
 			#self.yPosition = random.randint(0, 10)
 
-			self.nextX = random.random()* PLAY_FIELD_WIDTH
-			self.nextY = random.random()* PLAY_FIELD_LENGTH
+			self.nextX = random.random()* Properties.PLAY_FIELD_WIDTH
+			self.nextY = random.random()* Properties.PLAY_FIELD_LENGTH
 
 			self.laser.setPosition(self.nextX, self.nextY)
 			time.sleep(0.75) # wait 0.75 second
@@ -85,8 +82,8 @@ class ObstacleManager:
 
 
 	def set_difficulty(diff):
-		if (difficulty == 0):
-			speed = 0.5 # 0.5 m/s
+		if (diff == 0):
+			speed = 0.5 # m/s
 			#algorithm change?
 		else:
-			speed = 0.4 # 0.4 m/s
+			speed = 0.4 # m/s
