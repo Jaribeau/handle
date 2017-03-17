@@ -24,6 +24,8 @@ class LaserManager:
 		xPosition = 0
 		yPosition = 0
 
+		properties = Properties()
+
 	# Used by ObstacleManager
 	def setPosition(x, y):
 		xPosition = x
@@ -54,9 +56,9 @@ class LaserManager:
 
 
 	def toPolarCoords(x,y):
-		myX = float(x) - (Properties.PLAY_FIELD_WIDTH/2)
-		myY = float(y) + Properties.CAM_DIST_HORI
-		myZ = Properties.CAM_DIST_VERT
+		myX = float(x) - (properties.PLAY_FIELD_WIDTH/2)
+		myY = float(y) + properties.CAM_DIST_HORI
+		myZ = properties.CAM_DIST_VERT
 
 		horiAngle = math.atan(myY/myX) # theta
 		vertAngle = math.acos(myY/math.sqrt(math.pow(myX,2),math.pow(myY,2),math.pow(myZ,2))) # phi
@@ -66,15 +68,17 @@ class LaserManager:
 	# theta = horizontal angle
 	# phi = vertical angle
 	def toCartesianCoords(theta, phi):
-		x = (-(math.tan(theta)/math.pow(math.cos(phi),2)) + math.sqrt((math.pow(math.tan(theta),2)/math.pow(math.cos(phi),4)) - (4 + 4*math.pow(math.tan(theta),2)*Properties.CAM_DIST_VERT)))/(2+2*math.pow(math.tan(theta),2)) # Check design logbook p20-21 for equation derivation
+		x = (-(math.tan(theta)/math.pow(math.cos(phi),2)) + math.sqrt((math.pow(math.tan(theta),2)/math.pow(math.cos(phi),4)) - (4 + 4*math.pow(math.tan(theta),2)*properties.CAM_DIST_VERT)))/(2+2*math.pow(math.tan(theta),2)) # Check design logbook p20-21 for equation derivation
 		y = x*math.tan(theta)
 
 		return x,y
 
 	def laserSwitch(laserOn):
 		if laserOn:
+			time.sleep(1)
 			#turn on laser
 		else:
+			time.sleep(1)
 			#turn off laser
 
 

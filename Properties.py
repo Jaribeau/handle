@@ -1,1 +1,8 @@
-class 
+
+
+class Properties:
+	PLAY_FIELD_WIDTH = 2.0
+	PLAY_FIELD_LENGTH = 2.0
+	CAM_DIST_HORI = 0.5
+	CAM_DIST_VERT = 1.5
+	

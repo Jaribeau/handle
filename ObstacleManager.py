@@ -27,6 +27,7 @@ class ObstacleManager:
 		self.nextY = 0.0
 
 		self.laser = LaserManager()
+		properties = Properties()
 		start_movement(self)
 
 
@@ -37,7 +38,7 @@ class ObstacleManager:
 		print "Obst: (", self.xPosition, ", ", self.yPosition, ")"
 		print "Ball: (", x, ", ", y, ")"
 		print "--"
-		if (not(0 < x and x < Properties.PLAY_FIELD_WIDTH and 0 < y and y < Properties.PLAY_FIELD_LENGTH)):
+		if (not(0 < x and x < properties.PLAY_FIELD_WIDTH and 0 < y and y < properties.PLAY_FIELD_LENGTH)):
 			return True
 		elif ((self.xPosition - radius) <= x <= (self.xPosition + radius)) and ((self.yPosition - radius) <= y <= (self.yPosition + radius)):
 			return True
@@ -66,8 +67,8 @@ class ObstacleManager:
 			#self.xPosition = random.randint(0, 10)
 			#self.yPosition = random.randint(0, 10)
 
-			self.nextX = random.random()* Properties.PLAY_FIELD_WIDTH
-			self.nextY = random.random()* Properties.PLAY_FIELD_LENGTH
+			self.nextX = random.random()* properties.PLAY_FIELD_WIDTH
+			self.nextY = random.random()* properties.PLAY_FIELD_LENGTH
 
 			self.laser.setPosition(self.nextX, self.nextY)
 			time.sleep(0.75) # wait 0.75 second
@@ -77,8 +78,8 @@ class ObstacleManager:
 	# Only to be run on its own thread
 	def next_step(self):
 		while self.keepMoving:
-			if (self.xPosition == self.nextX AND self.yPosition == self.nextY):
-
+			if (self.xPosition == self.nextX and self.yPosition == self.nextY):
+                time.sleep(1)
 
 
 	def set_difficulty(diff):
