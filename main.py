@@ -5,7 +5,7 @@
 # vision = CameraManager()
 # vision.startBallTracking()
 
-
+import time
 #from GameManager import GameManager
 from ObstacleManager import ObstacleManager
 
@@ -15,4 +15,5 @@ from ObstacleManager import ObstacleManager
 obstacle = ObstacleManager()
 obstacle.start_movement()
 
-input('stop?')
+while (True):
+    time.sleep(1)
