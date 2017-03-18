@@ -30,7 +30,11 @@ class LaserManager:
         self.xPosition = x
         self.yPosition = y
 
+        print("Received x,y: ", self.xPosition, self.yPosition)
+
         angles = self.toPolarCoords(self.xPosition, self.yPosition)
+
+        print("Angles: ", angles)
 
         dutyhori = float(angles[0]) / 10.0 + 2.5
         dutyvert = float(angles[1]) / 10.0 + 2.5
