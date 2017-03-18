@@ -18,8 +18,8 @@ class GameManager:
 
 
     def start_game(self):
-        print "Starting Game!!!"
-        print "----------------"
+        print ("Starting Game!!!")
+        print ("----------------")
         self.ballTracker.start_ball_tracking()
         self.ballTracker.register(self)
         self.obstacle.start_movement()
@@ -32,7 +32,7 @@ class GameManager:
 
 
     def end_game(self):
-        print "Game Over."
+        print ("Game Over.")
         self.ballTracker.stop_ball_tracking()
         self.ballTracker.unregister_all()
         self.obstacle.stop_movement()
@@ -48,10 +48,10 @@ class GameManager:
         if self.obstacle.collides_with([keywordargs.get('x'), keywordargs.get('y')], self.ballTracker.get_ball_radius()):
 
             # TODO: Figure out why frame isn't being passed through correctly
-            print keywordargs.get('frame')
+            print (keywordargs.get('frame'))
             # cv2.imshow("Ball Tracking", keywordargs.get('frame'))
             # cv2.waitKey(1)
-            print "------- Collision!!! --------"
+            print ("------- Collision!!! --------")
             self.end_game()
 
 

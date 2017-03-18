@@ -88,7 +88,7 @@ while True:
 
 	# update the points queue
 	pts.appendleft(center)
-	print center
+	print (center)
 
 	# loop over the set of tracked points
 	for i in xrange(1, len(pts)):

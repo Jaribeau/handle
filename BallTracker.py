@@ -46,8 +46,8 @@ class BallTracker:
     # Only to be run on its own thread
     def track_ball(self, video="vision/videos/video2.mp4"):
 
-        print 'Started real camera ball tracking!!!!'
-        print cv2.__version__
+        print ('Started real camera ball tracking!!!!')
+        print (cv2.__version__)
         # define the lower and upper boundaries of the "green"
         # ball in the HSV color space, then initialize the
         # list of tracked points
@@ -140,17 +140,17 @@ class BallTracker:
         camera.release()
         cv2.destroyAllWindows()
 
-        print "Ball tracking stopped."
+        print ("Ball tracking stopped.")
 
     def read_keyboard_input(self):
         key = raw_input('q = Exit, p = Get Ball Position \n')
-        print "Key entered: " + key
+        print ("Key entered: " + key)
 
         if key == 'q':
             self.stop_ball_tracking()
 
         elif key == 'p':
-            print self.get_ball_position()
+            print (self.get_ball_position())
             self.read_keyboard_input()
 
         else:

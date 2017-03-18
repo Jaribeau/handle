@@ -79,7 +79,7 @@ while True:
             cv2.circle(frame, center, 5, (0, 0, 255), -1)
 
     # update the points queue
-    print center
+    print (center)
 
     # show the frame to our screen
     cv2.imshow("Frame", frame)
