@@ -4,10 +4,11 @@ import random
 import threading
 import time
 
-from LaserManager import LaserManager
+#from LaserManager import LaserManager
 from Properties import Properties
 
 class ObstacleManager:
+
     def __init__(self):
         self.xPosition = 0
         self.yPosition = 0
@@ -23,9 +24,8 @@ class ObstacleManager:
         self.nextX = 0.0
         self.nextY = 0.0
 
-        self.laser = LaserManager()
-        properties = Properties()
-        start_movement(self)
+        #self.laser = LaserManager()
+        self.properties = Properties()
 
     # called by GameManager
     def collides_with(self, position, radius):
@@ -34,7 +34,7 @@ class ObstacleManager:
         print("Obst: (", self.xPosition, ", ", self.yPosition, ")")
         print("Ball: (", x, ", ", y, ")")
         print("--")
-        if (not (0 < x and x < properties.PLAY_FIELD_WIDTH and 0 < y and y < properties.PLAY_FIELD_LENGTH)):
+        if (not (0 < x and x < self.properties.PLAY_FIELD_WIDTH and 0 < y and y < self.properties.PLAY_FIELD_LENGTH)):
             return True
         elif ((self.xPosition - radius) <= x <= (self.xPosition + radius)) and (
                 (self.yPosition - radius) <= y <= (self.yPosition + radius)):
@@ -65,10 +65,11 @@ class ObstacleManager:
             # self.xPosition = random.randint(0, 10)
             # self.yPosition = random.randint(0, 10)
 
-            self.nextX = random.random() * properties.PLAY_FIELD_WIDTH
-            self.nextY = random.random() * properties.PLAY_FIELD_LENGTH
+            self.nextX = random.random() * self.properties.PLAY_FIELD_WIDTH
+            self.nextY = random.random() * self.properties.PLAY_FIELD_LENGTH
 
-            self.laser.setPosition(self.nextX, self.nextY)
+            #self.laser.setPosition(self.nextX, self.nextY)
+            print("New position is", self.nextX, self.nextY)
             time.sleep(0.75)  # wait 0.75 second
             # self.xPosition = self.nextX
         # self.yPosition = self.nextY
