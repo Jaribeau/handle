@@ -15,47 +15,47 @@ class LaserManager:
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(2, GPIO.OUT)
         GPIO.setup(18, GPIO.OUT)
-        pwmVert = GPIO.PWM(2, 100)
-        pwmHori = GPIO.PWM(18, 100)
-        pwmVert.start(5)
-        pwmHori.start(5)
+        self.pwmVert = GPIO.PWM(2, 100)
+        self.pwmHori = GPIO.PWM(18, 100)
+        self.pwmVert.start(5)
+        self.pwmHori.start(5)
 
-        xPosition = 0
-        yPosition = 0
+        self.xPosition = 0
+        self.yPosition = 0
 
-        properties = Properties()
+        self.properties = Properties()
 
     # Used by ObstacleManager
-    def setPosition(x, y):
-        xPosition = x
-        yPosition = y
+    def setPosition(self, x, y):
+        self.xPosition = x
+        self.yPosition = y
 
-        angles = toPolarCoords(xPosition, yPosition)
+        angles = toPolarCoords(self.xPosition, self.yPosition)
 
         dutyhori = float(angles[0]) / 10.0 + 2.5
         dutyvert = float(angles[1]) / 10.0 + 2.5
 
-        pwmHori.ChangeDutyCycle(dutyhori)
-        pwmVert.ChangeDutyCycle(dutyvert)
+        self.pwmHori.ChangeDutyCycle(dutyhori)
+        self.pwmVert.ChangeDutyCycle(dutyvert)
 
     # Used by ObstacleManager
-    def getXPosition():
-        return xPosition
+    def getXPosition(self):
+        return self.xPosition
 
     # Used by ObstacleManager
-    def getYPosition():
-        return yPosition
+    def getYPosition(self):
+        return self.yPosition
 
     # Used by ObstacleManager
-    def stop():
-        pwmHori.stop()
-        pwmVert.stop()
+    def stop(self):
+        self.pwmHori.stop()
+        self.pwmVert.stop()
         laserSwitch(False)
 
-    def toPolarCoords(x, y):
-        myX = float(x) - (properties.PLAY_FIELD_WIDTH / 2)
-        myY = float(y) + properties.CAM_DIST_HORI
-        myZ = properties.CAM_DIST_VERT
+    def toPolarCoords(self, x, y):
+        myX = float(x) - (self.properties.PLAY_FIELD_WIDTH / 2)
+        myY = float(y) + self.properties.CAM_DIST_HORI
+        myZ = self.properties.CAM_DIST_VERT
 
         horiAngle = math.atan(myY / myX)  # theta
         vertAngle = math.acos(myY / math.sqrt(math.pow(myX, 2), math.pow(myY, 2), math.pow(myZ, 2)))  # phi
@@ -64,16 +64,17 @@ class LaserManager:
 
     # theta = horizontal angle
     # phi = vertical angle
-    def toCartesianCoords(theta, phi):
+    def toCartesianCoords(self, theta, phi):
         x = (-(math.tan(theta) / math.pow(math.cos(phi), 2)) + math.sqrt(
             (math.pow(math.tan(theta), 2) / math.pow(math.cos(phi), 4)) - (
-            4 + 4 * math.pow(math.tan(theta), 2) * properties.CAM_DIST_VERT))) / (
+            4 + 4 * math.pow(math.tan(theta), 2) * self.properties.CAM_DIST_VERT))) / (
             2 + 2 * math.pow(math.tan(theta), 2))  # Check design logbook p20-21 for equation derivation
         y = x * math.tan(theta)
 
         return x, y
 
-    #	def laserSwitch(laserOn):
+    def laserSwitch(self, laserOn):
+        return laserOn #dummy return so python doesn't complain about an empty def
     #		if laserOn:
     #			time.sleep(1)
     # turn on laser
