@@ -58,7 +58,7 @@ class LaserManager:
         myZ = self.properties.CAM_DIST_VERT
 
         horiAngle = math.atan(myY / myX)  # theta
-        vertAngle = math.acos(myY / math.sqrt(math.pow(myX, 2), math.pow(myY, 2), math.pow(myZ, 2)))  # phi
+        vertAngle = math.acos(myY / math.sqrt(math.pow(myX, 2) + math.pow(myY, 2) + math.pow(myZ, 2)))  # phi
 
         return horiAngle, vertAngle
 
