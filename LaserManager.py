@@ -30,7 +30,7 @@ class LaserManager:
         self.xPosition = x
         self.yPosition = y
 
-        angles = toPolarCoords(self.xPosition, self.yPosition)
+        angles = self.toPolarCoords(self.xPosition, self.yPosition)
 
         dutyhori = float(angles[0]) / 10.0 + 2.5
         dutyvert = float(angles[1]) / 10.0 + 2.5
@@ -50,7 +50,7 @@ class LaserManager:
     def stop(self):
         self.pwmHori.stop()
         self.pwmVert.stop()
-        laserSwitch(False)
+        self.laserSwitch(False)
 
     def toPolarCoords(self, x, y):
         myX = float(x) - (self.properties.PLAY_FIELD_WIDTH / 2)
