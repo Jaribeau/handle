@@ -14,9 +14,9 @@ class LaserManager:
     def __init__(self):
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(2, GPIO.OUT)
-        GPIO.setup(18, GPIO.OUT)
+        GPIO.setup(14, GPIO.OUT)
         self.pwmVert = GPIO.PWM(2, 100)
-        self.pwmHori = GPIO.PWM(18, 100)
+        self.pwmHori = GPIO.PWM(14, 100)
         self.pwmVert.start(5)
         self.pwmHori.start(5)
 
