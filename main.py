@@ -24,4 +24,7 @@ while (True):
     #time.sleep(1)
     #obstacle.laserSwitch(input("switch?"))
     userInput = input('Please enter an x and y ("x,y"):')
+    if (userInput == "stop"):
+        laser.stop()
     laser.setPosition(userInput[0], userInput[1])
+

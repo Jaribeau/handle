@@ -38,8 +38,6 @@ class LaserManager:
         self.xPosition = x
         self.yPosition = y
 
-        print("Received x,y: ", self.xPosition, self.yPosition)
-
         angles = self.toPolarCoords(self.xPosition, self.yPosition)
 
         print("Angles: ", angles)
@@ -74,7 +72,7 @@ class LaserManager:
         else:
             horiAngle = -math.atan(myX / myY)*180/math.pi  # theta
 
-        vertAngle = math.acos(myZ/math.sqrt(math.pow(myX, 2) + math.pow(myY, 2) + math.pow(myZ, 2))) *180/math.pi  # phi
+        vertAngle = math.asin(myZ/math.sqrt(math.pow(myX, 2) + math.pow(myY, 2) + math.pow(myZ, 2))) *180/math.pi  # phi
 
         return horiAngle, vertAngle
 
