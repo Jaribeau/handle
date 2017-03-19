@@ -48,7 +48,7 @@ class Obstacle:
 		# called by GameManager
 	def stop_movement(self):
 		self.keepMoving = False
-		print "Obstacle motion stopped."
+		print ("Obstacle motion stopped.")
 
 
 

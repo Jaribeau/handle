@@ -54,19 +54,19 @@ class CameraManager:
 			self.lastUpdated = time.clock()
 			self.update_observers("Location Updated:", x=self.xBallPosition, y=self.yBallPosition, updated_at=self.lastUpdated)
 
-		print "Ball tracking stopped."
+		print ("Ball tracking stopped.")
 
 
 
 	def read_keyboard_input(self):
 		key = raw_input('q = Exit, p = Get Ball Position \n')
-		print "Key entered: " + key
+		print ("Key entered: " + key)
 
 		if key == 'q':
 			self.stop_ball_tracking()
 
 		elif key == 'p':
-			print self.get_ball_position()
+			print (self.get_ball_position())
 			self.read_keyboard_input()
 
 		else:
@@ -116,8 +116,8 @@ class CameraManager:
 # __________________________________________________
 
 # # USAGE
-# # python ball_tracking.py --video ball_tracking_example.mp4
-# # python ball_tracking.py
+# # python ball_tracking_demo.py --video ball_tracking_example.mp4
+# # python ball_tracking_demo.py
 
 # # import the necessary packages
 # from collections import deque
