@@ -19,8 +19,6 @@ class LaserManager:
 
         self.pwmVert = GPIO.PWM(2, 100)
         self.pwmHori = GPIO.PWM(14, 100)
-        self.pwmVert.start(5)
-        self.pwmHori.start(5)
 
         self.xPosition = 0
         self.yPosition = 0
@@ -29,6 +27,11 @@ class LaserManager:
 
         self.pwmHori.ChangeDutyCycle(90/10 +5)
         #self.pwmVert.ChangeDutyCycle(5)
+
+    def start(self):
+        self.pwmVert.start(5)
+        self.pwmHori.start(5)
+        self.laserSwitch(True)
 
     # Used by ObstacleManager
     def setPosition(self, x, y):

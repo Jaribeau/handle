@@ -16,8 +16,10 @@ from ObstacleManager import ObstacleManager
 obstacle = ObstacleManager()
 obstacle.start_movement()
 
-while (True):
-    time.sleep(1)
+input('inpuuuuut')
+obstacle.stop_movement()
+#while (True):
+#    time.sleep(1)
     #obstacle.laserSwitch(input("switch?"))
 #    userInput = input('Please enter an x and y ("x,y"):')
 #    obstacle.setPosition(userInput[0], userInput[1])

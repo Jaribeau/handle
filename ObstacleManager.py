@@ -48,6 +48,7 @@ class ObstacleManager:
     def start_movement(self):
         # Start obstacle movement thread
         print("start movement.")
+        self.laser.start()
         self.keepMoving = True
         t1 = threading.Thread(target=self.move_obstacle)
         t1.daemon = True
