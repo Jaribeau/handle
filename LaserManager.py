@@ -13,8 +13,10 @@ from Properties import Properties
 class LaserManager:
     def __init__(self):
         GPIO.setmode(GPIO.BCM)
-        GPIO.setup(2, GPIO.OUT)
-        GPIO.setup(14, GPIO.OUT)
+        GPIO.setup(2, GPIO.OUT) # vertical servo
+        GPIO.setup(14, GPIO.OUT) # horizontal servo
+        GPIO.setup(15, GPIO.OUT)  # laser
+
         self.pwmVert = GPIO.PWM(2, 100)
         self.pwmHori = GPIO.PWM(14, 100)
         self.pwmVert.start(5)
@@ -83,14 +85,9 @@ class LaserManager:
 
         return x, y
 
+    # turns laser off if false, turns on if true
     def laserSwitch(self, laserOn):
-        return laserOn #dummy return so python doesn't complain about an empty def
-    #		if laserOn:
-    #			time.sleep(1)
-    # turn on laser
-    #		else:
-    #			time.sleep(1)
-    # turn off laser
+		GPIO.output(15, laserOn)
 
 
 #    userInput = ''
