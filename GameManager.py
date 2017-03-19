@@ -8,12 +8,12 @@ class GameManager:
 
 
 
-	def __init__(self, time=60000, difficulty="Normal"):
-		self.ballTracker = BallTracker()
-		self.obstacle = ObstacleManager()
-		self.timeRemaining = time
-		self.difficulty = difficulty
-		self.gameOn = False
+    def __init__(self, time=60000, difficulty="Normal"):
+        self.ballTracker = BallTracker()
+        self.obstacle = ObstacleManager()
+        self.timeRemaining = time
+        self.difficulty = difficulty
+        self.gameOn = False
 
 
 
@@ -48,7 +48,7 @@ class GameManager:
         if self.obstacle.collides_with([keywordargs.get('x'), keywordargs.get('y')], self.ballTracker.get_ball_radius()):
 
             # TODO: Figure out why frame isn't being passed through correctly
-            print (keywordargs.get('frame'))
+            # print (keywordargs.get('frame'))
             # cv2.imshow("Ball Tracking", keywordargs.get('frame'))
             # cv2.waitKey(1)
             print ("------- Collision!!! --------")

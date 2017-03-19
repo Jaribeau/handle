@@ -4,7 +4,7 @@ import random
 import threading
 import time
 
-from LaserManager import LaserManager
+# from LaserManager import LaserManager
 from Properties import Properties
 
 class ObstacleManager:
@@ -24,7 +24,7 @@ class ObstacleManager:
         self.nextX = 0.0
         self.nextY = 0.0
 
-        self.laser = LaserManager()
+        # self.laser = LaserManager()
         self.properties = Properties()
 
     # called by GameManager
@@ -34,6 +34,12 @@ class ObstacleManager:
         print("Obst: (", self.xPosition, ", ", self.yPosition, ")")
         print("Ball: (", x, ", ", y, ")")
         print("--")
+
+        if not x and not y:
+            return False
+
+        return False
+
         if (not (0 < x and x < self.properties.PLAY_FIELD_WIDTH and 0 < y and y < self.properties.PLAY_FIELD_LENGTH)):
             return True
         elif ((self.xPosition - radius) <= x <= (self.xPosition + radius)) and (
@@ -55,7 +61,7 @@ class ObstacleManager:
     # called by GameManager
     def stop_movement(self):
         self.keepMoving = False
-        self.laser.stop()
+        # self.laser.stop()
         print("Obstacle motion stopped.")
 
 
@@ -68,11 +74,11 @@ class ObstacleManager:
             self.nextX = random.random() * self.properties.PLAY_FIELD_WIDTH
             self.nextY = random.random() * self.properties.PLAY_FIELD_LENGTH
 
-            self.laser.setPosition(self.nextX, self.nextY)
+            # self.laser.setPosition(self.nextX, self.nextY)
             print("New position is", self.nextX, self.nextY)
+            self.xPosition = self.nextX
+            self.yPosition = self.nextY
             time.sleep(1)  # wait 0.75 second
-            # self.xPosition = self.nextX
-        # self.yPosition = self.nextY
 
     # Only to be run on its own thread
     #	def next_step(self):
