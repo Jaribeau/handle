@@ -28,6 +28,7 @@ class LaserManager:
         self.properties = Properties()
 
         self.pwmHori.ChangeDutyCycle(90/10 +5)
+        #self.pwmVert.ChangeDutyCycle(5)
 
     # Used by ObstacleManager
     def setPosition(self, x, y):
