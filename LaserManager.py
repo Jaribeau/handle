@@ -25,7 +25,7 @@ class LaserManager:
 
         self.properties = Properties()
 
-        self.pwmHori.ChangeDutyCycle(120.0/10 +2.5)
+        self.pwmHori.ChangeDutyCycle(90/10 +5)
 
     # Used by ObstacleManager
     def setPosition(self, x, y):
@@ -38,8 +38,8 @@ class LaserManager:
 
         print("Angles: ", angles)
 
-        dutyhori = float(angles[0] + 90.0) / 10.0 + 2.5
-        dutyvert = float(angles[1] + 90.0) / 10.0 + 2.5
+        dutyhori = float(angles[0] + 90.0) / 10.0 + 5
+        dutyvert = float(angles[1] + 90.0) / 10.0 + 5
 
         self.pwmHori.ChangeDutyCycle(dutyhori)
         self.pwmVert.ChangeDutyCycle(dutyvert)
@@ -66,7 +66,7 @@ class LaserManager:
         if myX == 0.0:
             horiAngle = 0.0
         else:
-            horiAngle = -math.atan(myY / myX)*180/math.pi  # theta
+            horiAngle = -math.atan(myX / myY)*180/math.pi  # theta
 
         vertAngle = -math.acos(myZ / math.sqrt(math.pow(myX, 2) + math.pow(myY, 2) + math.pow(myZ, 2))) *180/math.pi  # phi
 
