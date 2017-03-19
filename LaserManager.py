@@ -74,7 +74,7 @@ class LaserManager:
         else:
             horiAngle = -math.atan(myX / myY)*180/math.pi  # theta
 
-        vertAngle = math.acos(math.sqrt(math.pow(myX, 2) + math.pow(myY, 2) + math.pow(myZ, 2))/myZ) *180/math.pi  # phi
+        vertAngle = math.acos(myZ/math.sqrt(math.pow(myX, 2) + math.pow(myY, 2) + math.pow(myZ, 2))) *180/math.pi  # phi
 
         return horiAngle, vertAngle
 
