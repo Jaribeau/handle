@@ -25,7 +25,7 @@ class LaserManager:
 
         self.properties = Properties()
 
-        self.pwmHori.ChangeDutyCycle(90/10 +5)
+        self.pwmHori.ChangeDutyCycle(80.0/10 +5)
         #self.pwmVert.ChangeDutyCycle(5)
 
     def start(self):
@@ -43,7 +43,7 @@ class LaserManager:
         print("Angles: ", angles)
 
         dutyhori = float(angles[0] + 90.0) / 10.0 + 5
-        dutyvert = float(angles[1]) / 10.0 + 5
+        dutyvert = float(angles[1]) / 10.0 + 6.72
 
         self.pwmHori.ChangeDutyCycle(dutyhori)
         self.pwmVert.ChangeDutyCycle(dutyvert)
