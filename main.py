@@ -13,13 +13,15 @@ from LaserManager import LaserManager
 #game = GameManager()
 #game.start_game()
 
-obstacle = LaserManager()
+#obstacle = ObstacleManager()
 #obstacle.start_movement()
 
+laser = LaserManager()
+laser.start()
 
 #obstacle.stop_movement()
 while (True):
     #time.sleep(1)
     #obstacle.laserSwitch(input("switch?"))
     userInput = input('Please enter an x and y ("x,y"):')
-    obstacle.setPosition(userInput[0], userInput[1])
+    laser.setPosition(userInput[0], userInput[1])
