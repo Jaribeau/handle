@@ -16,7 +16,7 @@ from ObstacleManager import ObstacleManager
 obstacle = ObstacleManager()
 obstacle.start_movement()
 
-input('inpuuuuut')
+asdf = input('inpuuuuut')
 obstacle.stop_movement()
 #while (True):
 #    time.sleep(1)

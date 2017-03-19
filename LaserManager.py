@@ -45,7 +45,7 @@ class LaserManager:
         print("Angles: ", angles)
 
         dutyhori = float(angles[0] + 90.0) / 10.0 + 5
-        dutyvert = float(angles[1] + 90.0) / 10.0 + 5
+        dutyvert = float(angles[1]) / 10.0 + 5
 
         self.pwmHori.ChangeDutyCycle(dutyhori)
         self.pwmVert.ChangeDutyCycle(dutyvert)
@@ -74,7 +74,7 @@ class LaserManager:
         else:
             horiAngle = -math.atan(myX / myY)*180/math.pi  # theta
 
-        vertAngle = -math.acos(myZ / math.sqrt(math.pow(myX, 2) + math.pow(myY, 2) + math.pow(myZ, 2))) *180/math.pi  # phi
+        vertAngle = math.acos(math.sqrt(math.pow(myX, 2) + math.pow(myY, 2) + math.pow(myZ, 2))/myZ) *180/math.pi  # phi
 
         return horiAngle, vertAngle
 
