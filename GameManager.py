@@ -1,19 +1,19 @@
 # GameManager
 
 from BallTracker import BallTracker
-from Obstacle import Obstacle
+from ObstacleManager import ObstacleManager
 
 
 class GameManager:
 
 
 
-    def __init__(self, time=60000, difficulty="Normal"):
-        self.ballTracker = BallTracker()
-        self.obstacle = Obstacle()
-        self.timeRemaining = time
-        self.difficulty = difficulty
-        self.gameOn = False
+	def __init__(self, time=60000, difficulty="Normal"):
+		self.ballTracker = BallTracker()
+		self.obstacle = ObstacleManager()
+		self.timeRemaining = time
+		self.difficulty = difficulty
+		self.gameOn = False
 
 
 
