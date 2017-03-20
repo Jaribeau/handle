@@ -40,8 +40,8 @@ class LaserManager:
     # Used by ObstacleManager
     # x and y in meters
     def setPosition(self, x, y):
-        self.xPosition = x+0.15
-        self.yPosition = y
+        self.xPosition = x+0.14
+        self.yPosition = y+0.05
 
         print(x,y)
         
@@ -55,7 +55,7 @@ class LaserManager:
         self.pwmHori.ChangeDutyCycle(dutyhori)
         self.pwmVert.ChangeDutyCycle(dutyvert)
 
-        time.sleep(0.4)
+        time.sleep(0.2)
         self.pwmHori.ChangeDutyCycle(0)
         self.pwmVert.ChangeDutyCycle(0)
 

@@ -30,12 +30,12 @@ class ObstacleManager:
         self.nextX = 0.0
         self.nextY = 0.0
 
-        self.x_rate = 0.03
-        self.y_rate = 0.03
+        self.x_rate = 0.1
+        self.y_rate = 0.1
 
         self.mode = "bounce"
         self.set_mode("bounce")
-        self.period = 0.1 # seconds between each movement
+        self.period = 0.5 # seconds between each movement
 
 
     # called by GameManager
@@ -98,20 +98,20 @@ class ObstacleManager:
             elif self.mode == "bounce":
                 print ("Bouncing...")
                 if self.xPosition < 0:
-                    self.x_rate = (random.randint(1, 3) / 50.0)
-                    self.y_rate = (random.randint(-3, 3) / 50.0)
+                    self.x_rate = (random.randint(1, 3) / 10.0)
+                    self.y_rate = (random.randint(-3, 3) / 10.0)
 
                 elif self.xPosition > self.properties.PLAY_FIELD_WIDTH:
-                    self.x_rate = -(random.randint(1, 3) / 50.0)
-                    self.y_rate = (random.randint(-3, 3) / 50.0)
+                    self.x_rate = -(random.randint(1, 3) / 10.0)
+                    self.y_rate = (random.randint(-3, 3) / 10.0)
 
                 elif self.yPosition < 0:
-                    self.x_rate = (random.randint(-3, 3) / 50.0)
-                    self.y_rate = (random.randint(1, 3) / 50.0)
+                    self.x_rate = (random.randint(-3, 3) / 10.0)
+                    self.y_rate = (random.randint(1, 3) / 10.0)
 
                 elif self.yPosition > self.properties.PLAY_FIELD_LENGTH:
-                    self.x_rate = -(random.randint(-3, 3) / 50.0)
-                    self.y_rate = -(random.randint(1, 3) / 50.0)
+                    self.x_rate = -(random.randint(-3, 3) / 10.0)
+                    self.y_rate = -(random.randint(1, 3) / 10.0)
 
                 self.nextX = self.xPosition + self.x_rate
                 self.nextY = self.yPosition + self.y_rate
