@@ -8,7 +8,20 @@ import numpy as np
 
 
 class BallTracker:
-    # Make this private
+
+    # Singleton instance
+    instance = None
+
+
+    @staticmethod
+    def get_instance():
+        if BallTracker.instance is None:
+            BallTracker.instance = BallTracker()
+
+        return BallTracker.instance
+
+
+
     def __init__(self):
         self.ballTrackingEnabled = False
         self.xBallPosition = None
@@ -22,8 +35,12 @@ class BallTracker:
         except:
             print("WARNING: No deskew matrix found. Please re-run calibration to map the playing area.")
 
-    # TODO: Make singleton
-    # def getInstance(self):
+        # Singleton logic
+        if BallTracker.instance is None:
+            BallTracker.instance = self
+        else:
+            print("WARNING: You are creating an instance directly in a class intended to be a singleton. "
+                  "Use BallTracker.get_instance() instead.")
 
 
 

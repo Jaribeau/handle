@@ -10,7 +10,7 @@ class GameManager:
 
 
     def __init__(self, time=60000, difficulty="Normal"):
-        self.ballTracker = BallTracker()
+        self.ballTracker = BallTracker.get_instance()
         self.obstacle = ObstacleManager()
         self.timeRemaining = time
         self.difficulty = difficulty
