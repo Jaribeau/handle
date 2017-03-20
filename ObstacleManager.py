@@ -32,7 +32,7 @@ class ObstacleManager:
 
         self.mode = "target"
         self.set_mode("follow")
-        self.period = 0.25 # seconds between each movement
+        self.period = 0.5 # seconds between each movement
 
 
     # called by GameManager
@@ -116,7 +116,7 @@ class ObstacleManager:
                     self.nextY = self.yPosition + y_rate
 
 
-            # self.laser.setPosition(self.nextX, self.nextY)
+            self.laser.setPosition(self.nextX, self.nextY)
             self.xPosition = self.nextX
             self.yPosition = self.nextY
             print("New position is", self.nextX, self.nextY)
