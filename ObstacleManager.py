@@ -6,6 +6,7 @@ import time
 
 from LaserManager import LaserManager
 from Properties import Properties
+from BallTracker import BallTracker
 
 class ObstacleManager:
 
@@ -24,8 +25,12 @@ class ObstacleManager:
         self.nextX = 0.0
         self.nextY = 0.0
 
+        self.mode = "follow"
+
         self.laser = LaserManager()
         self.properties = Properties()
+        self.ballTracker = BallTracker()
+
 
     # called by GameManager
     def collides_with(self, position, radius):
@@ -67,8 +72,13 @@ class ObstacleManager:
             # self.xPosition = random.randint(0, 10)
             # self.yPosition = random.randint(0, 10)
 
-            self.nextX = random.random() * self.properties.PLAY_FIELD_WIDTH
-            self.nextY = random.random() * self.properties.PLAY_FIELD_LENGTH
+            # if (self.mode== "follow"):
+            #     self.nextX = self.nextX
+            #     self.nextY = self.nextY
+            # elif (self.mode == random):
+            #     self.nextX = random.random() * self.properties.PLAY_FIELD_WIDTH
+            #     self.nextY = random.random() * self.properties.PLAY_FIELD_LENGTH
+
 
             self.laser.setPosition(self.nextX, self.nextY)
             print("New position is", self.nextX, self.nextY)
@@ -82,10 +92,15 @@ class ObstacleManager:
     #			if (self.xPosition == self.nextX and self.yPosition == self.nextY):
     #                time.sleep(1)
 
+    # Observer function called by any observable class that this class registered to
+    def notify(self, *args, **keywordargs):
+        # TODO: CHECK ARGUMENTS TO DETERMINE MESSAGE/TYPE - pass on to handlers?
+        self.nextX = keywordargs.get('x')
+        self.nextY = keywordargs.get('y')
 
-    def set_difficulty(diff):
-        if (diff == 0):
-            speed = 0.5  # m/s
-            # algorithm change?
+    def set_mode(self, newMode):
+        self.mode = newMode
+        if newMode == "follow":
+            self.ballTracker.register(self)
         else:
-            speed = 0.4  # m/s
+            self.ballTracker.unregister(self)
