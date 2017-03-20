@@ -13,33 +13,37 @@ from Properties import Properties
 class LaserManager:
     def __init__(self):
         GPIO.setmode(GPIO.BCM)
-        GPIO.setup(2, GPIO.OUT)
-        GPIO.setup(14, GPIO.OUT)
+        GPIO.setup(2, GPIO.OUT) # vertical servo
+        GPIO.setup(14, GPIO.OUT) # horizontal servo
+        GPIO.setup(15, GPIO.OUT)  # laser
+
         self.pwmVert = GPIO.PWM(2, 100)
         self.pwmHori = GPIO.PWM(14, 100)
-        self.pwmVert.start(5)
-        self.pwmHori.start(5)
 
         self.xPosition = 0
         self.yPosition = 0
 
         self.properties = Properties()
 
-        self.pwmHori.ChangeDutyCycle(120.0/10 +2.5)
+        self.pwmHori.ChangeDutyCycle(80.0/10 +5)
+        #self.pwmVert.ChangeDutyCycle(5)
+
+    def start(self):
+        self.pwmVert.start(5)
+        self.pwmHori.start(5)
+        self.laserSwitch(True)
 
     # Used by ObstacleManager
     def setPosition(self, x, y):
         self.xPosition = x
         self.yPosition = y
 
-        print("Received x,y: ", self.xPosition, self.yPosition)
-
         angles = self.toPolarCoords(self.xPosition, self.yPosition)
 
         print("Angles: ", angles)
 
-        dutyhori = float(angles[0] + 90.0) / 10.0 + 2.5
-        dutyvert = float(angles[1] + 90.0) / 10.0 + 2.5
+        dutyhori = float(angles[0] + 90.0) / 10.0 + 5
+        dutyvert = float(angles[1]) / 10.0 + 6.72
 
         self.pwmHori.ChangeDutyCycle(dutyhori)
         self.pwmVert.ChangeDutyCycle(dutyvert)
@@ -66,9 +70,9 @@ class LaserManager:
         if myX == 0.0:
             horiAngle = 0.0
         else:
-            horiAngle = -math.atan(myY / myX)*180/math.pi  # theta
+            horiAngle = -math.atan(myX / myY)*180/math.pi  # theta
 
-        vertAngle = -math.acos(myZ / math.sqrt(math.pow(myX, 2) + math.pow(myY, 2) + math.pow(myZ, 2))) *180/math.pi  # phi
+        vertAngle = math.asin(myZ/math.sqrt(math.pow(myX, 2) + math.pow(myY, 2) + math.pow(myZ, 2))) *180/math.pi  # phi
 
         return horiAngle, vertAngle
 
@@ -83,14 +87,9 @@ class LaserManager:
 
         return x, y
 
+    # turns laser off if false, turns on if true
     def laserSwitch(self, laserOn):
-        return laserOn #dummy return so python doesn't complain about an empty def
-    #		if laserOn:
-    #			time.sleep(1)
-    # turn on laser
-    #		else:
-    #			time.sleep(1)
-    # turn off laser
+		GPIO.output(15, laserOn)
 
 
 #    userInput = ''
