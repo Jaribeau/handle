@@ -68,8 +68,6 @@ while True:
         ''')
 
         # Show image and wait for 4 clicks.
-        cv2.destroyAllWindows()
-        cv2.imshow("Click 4 Corners (Top Left -> Top Right -> Bottom Right -> Bottom Left", frame)
         pts_src = get_four_points(frame)
 
         # Destination image

@@ -5,11 +5,13 @@ import threading
 import time
 import math
 
-from LaserManager import LaserManager
+# from LaserManager import LaserManager
 from Properties import Properties
 from BallTracker import BallTracker
 
 class ObstacleManager:
+
+
 
     def __init__(self):
         self.laser = LaserManager()
@@ -28,9 +30,9 @@ class ObstacleManager:
         self.nextX = 0.0
         self.nextY = 0.0
 
-        self.mode = "target"
-        self.set_mode("follow")
-        self.period = 0.75 # seconds between each movement
+        self.mode = "bounce"
+        self.set_mode("bounce")
+        self.period = 0.25 # seconds between each movement
 
 
     # called by GameManager
@@ -49,46 +51,80 @@ class ObstacleManager:
             return False
 
 
+
     # called by GameManager
     def start_movement(self):
         # Start obstacle movement thread
         print("start movement.")
-        self.laser.start()
+        # self.laser.start()
         self.keepMoving = True
         t1 = threading.Thread(target=self.move_obstacle)
         t1.daemon = True
         t1.start()
 
+
+
     # called by GameManager
     def stop_movement(self):
         self.keepMoving = False
-        self.laser.stop()
+        # self.laser.stop()
         print("Obstacle motion stopped.")
+
 
 
     # Only to be run on its own thread
     def move_obstacle(self):
+        x_rate = 0
+        y_rate = 0
+
         while self.keepMoving:  # Random motion until stopMovement called
-            # self.xPosition = random.randint(0, 10)
-            # self.yPosition = random.randint(0, 10)
             print(self.mode)
-            if (self.mode== "target"):
+
+            if self.mode == "target":
                 if self.xTarget == self.xPosition and self.yTarget == self.yPosition:
                     self.xTarget = random.random() * self.properties.PLAY_FIELD_WIDTH
                     self.yTarget = random.random() * self.properties.PLAY_FIELD_LENGTH
-            elif (self.mode == "random"):
+                    self.speed_calc()
+
+
+            elif self.mode == "random":
                 self.xTarget = random.random() * self.properties.PLAY_FIELD_WIDTH
                 self.yTarget = random.random() * self.properties.PLAY_FIELD_LENGTH
+                self.speed_calc()
 
-            #self.speed_calc()
 
-            self.laser.setPosition(self.nextX, self.nextY)
+            elif self.mode == "bounce":
+
+                if self.xPosition < 0:
+                    x_rate = (random.randint(0, 3) / 100.0)
+                    y_rate = (random.randint(-3, 3) / 100.0)
+
+                elif self.xPosition > self.properties.PLAY_FIELD_WIDTH:
+                    x_rate = -(random.randint(0, 3) / 100.0)
+                    y_rate = (random.randint(-3, 3) / 100.0)
+
+                elif self.yPosition < 0:
+                    x_rate = (random.randint(-3, 3) / 100.0)
+                    y_rate = (random.randint(0, 3) / 100.0)
+
+                elif self.yPosition > self.properties.PLAY_FIELD_LENGTH:
+                    x_rate = -(random.randint(-3, 3) / 100.0)
+                    y_rate = -(random.randint(0, 3) / 100.0)
+
+                else:
+                    self.nextX = self.xPosition + x_rate
+                    self.nextY = self.yPosition + y_rate
+
+
+            # self.laser.setPosition(self.nextX, self.nextY)
             self.xPosition = self.nextX
             self.yPosition = self.nextY
-            #print("New position is", self.nextX, self.nextY)
+            print("New position is", self.nextX, self.nextY)
             time.sleep(self.period)  # wait this many seconds
             # self.xPosition = self.nextX
         # self.yPosition = self.nextY
+
+
 
     def speed_calc(self):
         print("Target" , self.xTarget, self.yTarget)
@@ -109,6 +145,7 @@ class ObstacleManager:
     #		while self.keepMoving:
     #			if (self.xPosition == self.nextX and self.yPosition == self.nextY):
     #                time.sleep(1)
+
 
     # Observer function called by any observable class that this class registered to
     def notify(self, *args, **keywordargs):
