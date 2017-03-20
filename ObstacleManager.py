@@ -36,8 +36,8 @@ class ObstacleManager:
 
     # called by GameManager
     def collides_with(self, position, radius):
-        x = position[0]
-        y = position[1]
+        x = float(position[0])/100.0 # Converting cm to m
+        y = float(position[1])/100.0 # Converting cm to m
         print("Obst: (", self.xPosition, ", ", self.yPosition, ")")
         print("Ball: (", x, ", ", y, ")")
         print("--")
