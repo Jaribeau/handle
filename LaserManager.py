@@ -55,13 +55,9 @@ class LaserManager:
         self.pwmHori.ChangeDutyCycle(dutyhori)
         self.pwmVert.ChangeDutyCycle(dutyvert)
 
-<<<<<<< HEAD
-
-=======
         time.sleep(0.4)
         self.pwmHori.ChangeDutyCycle(0)
         self.pwmVert.ChangeDutyCycle(0)
->>>>>>> 3ad528dd7ecd7b4599239db0b7463973a598fb64
 
     # Used by ObstacleManager
     def getXPosition(self):
