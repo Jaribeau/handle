@@ -16,7 +16,7 @@ class ObstacleManager:
         self.yPosition = 0
         self.keepMoving = False
 
-        self.speed = 0.25
+        self.speed = 0.01
 
         self.xTarget = 0.0
         self.yTarget = 0.0
@@ -71,7 +71,7 @@ class ObstacleManager:
         while self.keepMoving:  # Random motion until stopMovement called
             # self.xPosition = random.randint(0, 10)
             # self.yPosition = random.randint(0, 10)
-
+            print(self.mode)
             if (self.mode== "target"):
                 if self.xTarget == self.xPosition and self.yTarget == self.yPosition:
                     self.xTarget = random.random() * self.properties.PLAY_FIELD_WIDTH
@@ -91,6 +91,8 @@ class ObstacleManager:
         # self.yPosition = self.nextY
 
     def speed_calc(self):
+        print("Target" , self.xTarget, self.yTarget)
+        print("Position" , self.xPosition, self.yPosition)
         xDiff = self.xTarget - self.xPosition
         yDiff = self.yTarget - self.yPosition
         maxDisp = self.speed * self.period
