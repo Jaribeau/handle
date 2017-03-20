@@ -2,6 +2,7 @@
 
 from BallTracker import BallTracker
 from ObstacleManager import ObstacleManager
+import cv2
 
 
 class GameManager:
@@ -14,6 +15,7 @@ class GameManager:
         self.timeRemaining = time
         self.difficulty = difficulty
         self.gameOn = False
+        self.frame = None
 
 
 
@@ -28,6 +30,9 @@ class GameManager:
 
         while self.gameOn:
             self.timeRemaining -= 1
+            if self.frame is not None:
+                cv2.imshow("Ball Tracking", self.frame)
+                cv2.waitKey(1)
 
 
 
@@ -44,13 +49,11 @@ class GameManager:
     # Observer function called by any observable class that this class registered to
     def notify(self, *args, **keywordargs):
 
+        # Store frame value for display from main thread
+        self.frame = keywordargs.get('frame')
+
         # TODO: CHECK ARGUMENTS TO DETERMINE MESSAGE/TYPE - pass on to handlers?
         if self.obstacle.collides_with([keywordargs.get('x'), keywordargs.get('y')], self.ballTracker.get_ball_radius()):
-
-            # TODO: Figure out why frame isn't being passed through correctly
-            # print (keywordargs.get('frame'))
-            # cv2.imshow("Ball Tracking", keywordargs.get('frame'))
-            # cv2.waitKey(1)
             print ("------- Collision!!! --------")
             self.end_game()
 
