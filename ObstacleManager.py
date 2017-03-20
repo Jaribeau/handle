@@ -28,7 +28,7 @@ class ObstacleManager:
 
         self.mode = "target"
         self.set_mode("target")
-        self.period = 0.001 # millisecond between each movement
+        self.period = 0.1 # millisecond between each movement
 
         self.laser = LaserManager()
         self.properties = Properties()
@@ -85,6 +85,8 @@ class ObstacleManager:
             self.speed_calc()
 
             self.laser.setPosition(self.nextX, self.nextY)
+            self.xPosition = self.nextX
+            self.yPosition = self.nextY
             #print("New position is", self.nextX, self.nextY)
             time.sleep(self.period)  # wait this many seconds
             # self.xPosition = self.nextX
@@ -111,8 +113,9 @@ class ObstacleManager:
     # Observer function called by any observable class that this class registered to
     def notify(self, *args, **keywordargs):
         # TODO: CHECK ARGUMENTS TO DETERMINE MESSAGE/TYPE - pass on to handlers?
-        self.nextX = keywordargs.get('x')
-        self.nextY = keywordargs.get('y')
+        if self.mode == "follow":
+            self.xTarget = keywordargs.get('x')
+            self.yTarget = keywordargs.get('y')
 
 
     # Possible modes: "follow", "target", "random"
