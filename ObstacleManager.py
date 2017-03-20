@@ -5,7 +5,7 @@ import threading
 import time
 import math
 
-# from LaserManager import LaserManager
+from LaserManager import LaserManager
 from Properties import Properties
 from BallTracker import BallTracker
 
