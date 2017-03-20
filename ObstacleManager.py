@@ -5,7 +5,7 @@ import threading
 import time
 import math
 
-from LaserManager import LaserManager
+# from LaserManager import LaserManager
 from Properties import Properties
 from BallTracker import BallTracker
 
@@ -18,8 +18,8 @@ class ObstacleManager:
         self.properties = Properties()
         self.ballTracker = BallTracker.get_instance()
         
-        self.xPosition = 0
-        self.yPosition = 0
+        self.xPosition = 0.0
+        self.yPosition = 0.0
         self.keepMoving = False
 
         self.speed = 0.01
@@ -30,9 +30,12 @@ class ObstacleManager:
         self.nextX = 0.0
         self.nextY = 0.0
 
-        self.mode = "target"
-        self.set_mode("follow")
-        self.period = 0.25 # seconds between each movement
+        self.x_rate = 0.03
+        self.y_rate = 0.03
+
+        self.mode = "bounce"
+        self.set_mode("bounce")
+        self.period = 0.1 # seconds between each movement
 
 
     # called by GameManager
@@ -74,11 +77,10 @@ class ObstacleManager:
 
     # Only to be run on its own thread
     def move_obstacle(self):
-        x_rate = 0
-        y_rate = 0
+
+        print("Obstacle mode:", self.mode)
 
         while self.keepMoving:  # Random motion until stopMovement called
-            print(self.mode)
 
             if self.mode == "target":
                 if self.xTarget == self.xPosition and self.yTarget == self.yPosition:
@@ -94,32 +96,32 @@ class ObstacleManager:
 
 
             elif self.mode == "bounce":
-
+                print ("Bouncing...")
                 if self.xPosition < 0:
-                    x_rate = (random.randint(0, 3) / 100.0)
-                    y_rate = (random.randint(-3, 3) / 100.0)
+                    self.x_rate = (random.randint(1, 3) / 50.0)
+                    self.y_rate = (random.randint(-3, 3) / 50.0)
 
                 elif self.xPosition > self.properties.PLAY_FIELD_WIDTH:
-                    x_rate = -(random.randint(0, 3) / 100.0)
-                    y_rate = (random.randint(-3, 3) / 100.0)
+                    self.x_rate = -(random.randint(1, 3) / 50.0)
+                    self.y_rate = (random.randint(-3, 3) / 50.0)
 
                 elif self.yPosition < 0:
-                    x_rate = (random.randint(-3, 3) / 100.0)
-                    y_rate = (random.randint(0, 3) / 100.0)
+                    self.x_rate = (random.randint(-3, 3) / 50.0)
+                    self.y_rate = (random.randint(1, 3) / 50.0)
 
                 elif self.yPosition > self.properties.PLAY_FIELD_LENGTH:
-                    x_rate = -(random.randint(-3, 3) / 100.0)
-                    y_rate = -(random.randint(0, 3) / 100.0)
+                    self.x_rate = -(random.randint(-3, 3) / 50.0)
+                    self.y_rate = -(random.randint(1, 3) / 50.0)
 
-                else:
-                    self.nextX = self.xPosition + x_rate
-                    self.nextY = self.yPosition + y_rate
+                self.nextX = self.xPosition + self.x_rate
+                self.nextY = self.yPosition + self.y_rate
 
 
-            # self.laser.setPosition(self.nextX, self.nextY)
+            self.laser.setPosition(self.nextX, self.nextY)
             self.xPosition = self.nextX
             self.yPosition = self.nextY
-            print("New position is", self.nextX, self.nextY)
+            print("Rate:", self.y_rate, self.y_rate)
+            print("New position is", self.xPosition, self.yPosition)
             time.sleep(self.period)  # wait this many seconds
             # self.xPosition = self.nextX
         # self.yPosition = self.nextY
