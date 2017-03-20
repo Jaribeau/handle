@@ -3,7 +3,7 @@
 
 import cv2
 import threading
-import random
+# import random
 import time
 import imutils
 
@@ -15,7 +15,7 @@ class BallTracker:
         self.xBallPosition = None
         self.yBallPosition = None
         self.lastUpdated = time.localtime()
-        self.ballRadius = 3  # NOTE: This is a magic number and should be moved to a "physical properties" class
+        self.ballRadius = 1  # NOTE: This is a magic number and should be moved to a "physical properties" class
         self.observers = []
 
     # TODO: Make singleton
@@ -44,7 +44,7 @@ class BallTracker:
         self.ballTrackingEnabled = False
 
     # Only to be run on its own thread
-    def track_ball(self, video="vision/videos/video2.mp4"):
+    def track_ball(self, video=""):
 
         print ('Started real camera ball tracking!!!!')
         print (cv2.__version__)

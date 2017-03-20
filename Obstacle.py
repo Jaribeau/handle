@@ -28,9 +28,11 @@ class Obstacle:
 		print "Obst: (", self.xPosition, ", ", self.yPosition, ")"
 		print "Ball: (", x, ", ", y, ")"
 		print "--"
-		if (!(0 == x == PLAY_FIELD_WIDTH && 0 == y == PLAY_FIELD_LENGTH)):
-			return True
-		elif ((self.xPosition - radius) <= x <= (self.xPosition + radius)) and ((self.yPosition - radius) <= y <= (self.yPosition + radius)):
+		# if (!(0 == x == PLAY_FIELD_WIDTH && 0 == y == PLAY_FIELD_LENGTH)):
+		# 	return True
+		# elif ((self.xPosition - radius) <= x <= (self.xPosition + radius)) and ((self.yPosition - radius) <= y <= (self.yPosition + radius)):
+		# 	return True
+		if ((self.xPosition - radius) <= x <= (self.xPosition + radius)) and ((self.yPosition - radius) <= y <= (self.yPosition + radius)):
 			return True
 		else:
 			return False
