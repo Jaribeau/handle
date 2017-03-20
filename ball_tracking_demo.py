@@ -82,6 +82,14 @@ while True:
 
         # Calculate the homography
         h, status = cv2.findHomography(pts_src, pts_dst)
+        
+        # Save the calibration values to a file
+        print ("------ Saved:")
+        print (h)
+        numpy.savetxt("deskew_matrix.txt", h)
+        print ("------ Loaded back:")
+        print (numpy.loadtxt("deskew_matrix.txt"))
+        
         cv2.destroyAllWindows()
         break
         # print (h)

@@ -2,6 +2,7 @@
 
 from BallTracker import BallTracker
 from ObstacleManager import ObstacleManager
+import imutils
 import cv2
 
 
@@ -31,7 +32,7 @@ class GameManager:
         while self.gameOn:
             self.timeRemaining -= 1
             if self.frame is not None:
-                frame = imutils.resize(frame, width=500)
+                self.frame = imutils.resize(self.frame, width=500)
                 cv2.imshow("Ball Tracking", self.frame)
                 cv2.waitKey(1)
 
@@ -58,6 +59,6 @@ class GameManager:
                 and keywordargs.get('y') is not None \
                 and self.obstacle.collides_with([keywordargs.get('x'), keywordargs.get('y')], self.ballTracker.get_ball_radius()):
             print ("------- Collision!!! --------")
-            self.end_game()
+            #self.end_game()
 
 
