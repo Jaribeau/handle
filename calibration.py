@@ -68,6 +68,7 @@ while True:
         ''')
 
         # Show image and wait for 4 clicks.
+        cv2.destroyAllWindows()
         cv2.imshow("Click 4 Corners (Top Left -> Top Right -> Bottom Right -> Bottom Left", frame)
         pts_src = get_four_points(frame)
 
@@ -96,7 +97,6 @@ while True:
 
         # Warp source image to destination
         im_dst = cv2.warpPerspective(frame, h, size[0:2])
-        cv2.destroyAllWindows()
 
         # Show output
         cv2.imshow("Image", im_dst)
