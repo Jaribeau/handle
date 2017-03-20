@@ -96,8 +96,12 @@ while True:
 
         # Warp source image to destination
         im_dst = cv2.warpPerspective(frame, h, size[0:2])
+        cv2.destroyAllWindows()
 
         # Show output
         cv2.imshow("Image", im_dst)
         cv2.waitKey(0)
 
+# cleanup the camera and close any open windows
+camera.release()
+cv2.destroyAllWindows()
