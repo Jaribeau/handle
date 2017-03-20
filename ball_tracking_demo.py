@@ -34,6 +34,8 @@ yellowUpperThreshold = (179, 255, 255)
 redLowerThreshold = (0, 100, 140) 
 redUpperThreshold = (20, 255, 255) 
 pts = deque(maxlen=args["buffer"])
+# Destination image
+size = (100,100,3)
 
 # -------------------------------
 # ------- VIDEO FEED SETUP ------
@@ -58,6 +60,19 @@ while True:
     if key == ord("q"):
         break
 
+    # if the 'l' key is pressed, load matrix from file
+    elif key == ord("l"):
+        deskew_matrix = None
+        try:
+            deskew_matrix = numpy.loadtxt("deskew_matrix.txt")
+            print("Loaded deskew matrix from calibration file.")
+            print(deskew_matrix)
+        except:
+            print("WARNING: No deskew matrix found. Please re-run calibration to map the playing area.")
+
+        break
+
+    # if the 'c' key is pressed, enter calibration mode
     elif key == ord("c"):
         print ('''
         Click on the four corners of the book -- top left first and
@@ -65,11 +80,10 @@ while True:
         ''')
 
         # Show image and wait for 4 clicks.
-        cv2.imshow("Click 4 Corners (Top Left -> Top Right -> Bottom Right -> Bottom Left", frame)
+        # cv2.imshow("Click 4 Corners (Top Left -> Top Right -> Bottom Right -> Bottom Left", frame)
         pts_src = get_four_points(frame)
 
         # Destination image
-        size = (100,100,3)
         im_dst = numpy.zeros(size, numpy.uint8)
         pts_dst = numpy.array(
                            [
@@ -81,7 +95,15 @@ while True:
                            )
 
         # Calculate the homography
-        h, status = cv2.findHomography(pts_src, pts_dst)
+        deskew_matrix, status = cv2.findHomography(pts_src, pts_dst)
+        
+        # Save the calibration values to a file
+        print ("------ Saved:")
+        print (deskew_matrix)
+        numpy.savetxt("deskew_matrix.txt", deskew_matrix)
+        print ("------ Loaded back:")
+        print (numpy.loadtxt("deskew_matrix.txt"))
+        
         cv2.destroyAllWindows()
         break
         # print (h)
@@ -107,7 +129,7 @@ print (transform_matrix)
 while True:
     # grab the current frame
     (grabbed, frame_distorted) = camera.read()
-    frame = cv2.warpPerspective(frame_distorted, h, size[0:2])
+    frame = cv2.warpPerspective(frame_distorted, deskew_matrix, size[0:2])
 
     # if we are viewing a video and we did not grab a frame,
     # then we have reached the end of the video
@@ -148,9 +170,10 @@ while True:
         if radius > 1:
             # draw the circle and centroid on the frame,
             # then update the list of tracked points
-            cv2.circle(frame, (int(x), int(y)), int(radius + 20),
-                (0, 255, 255), 2)
-            cv2.circle(frame, center, 5, (0, 0, 255), -1)
+            # cv2.putText(frame, "Hello!", , cvInitFont() ,(0, 255, 255))
+            cv2.putText(frame,"BALL FOUND!", (10, 50), cv2.FONT_ITALIC, 1, 255)
+            cv2.circle(frame, (int(x), int(y)), int(radius + 1), (0, 255, 255), 1)
+            cv2.circle(frame, center, 2, (0, 255, 255), -1)
 
     # update the points queue
     pts.appendleft(center)

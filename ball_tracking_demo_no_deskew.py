@@ -29,9 +29,9 @@ args = vars(ap.parse_args())
 # list of tracked points
 # For HSV, Hue range is [0,179], Saturation range is [0,255] and Value range is [0,255]
 # HSV Info: http://infohost.nmt.edu/tcc/help/pubs/colortheory/web/hsv.html
-yellowLowerThreshold = (170, 100, 140)
+yellowLowerThreshold = (170, 100, 40)
 yellowUpperThreshold = (179, 255, 255)
-redLowerThreshold = (0, 100, 140) 
+redLowerThreshold = (40, 100, 40)
 redUpperThreshold = (20, 255, 255) 
 pts = deque(maxlen=args["buffer"])
 

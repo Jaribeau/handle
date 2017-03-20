@@ -11,9 +11,15 @@ from BallTracker import BallTracker
 
 class ObstacleManager:
 
+
+
     def __init__(self):
-        self.xPosition = 0
-        self.yPosition = 0
+        self.laser = LaserManager()
+        self.properties = Properties()
+        self.ballTracker = BallTracker.get_instance()
+        
+        self.xPosition = 0.0
+        self.yPosition = 0.0
         self.keepMoving = False
 
         self.speed = 0.01
@@ -24,22 +30,21 @@ class ObstacleManager:
         self.nextX = 0.0
         self.nextY = 0.0
 
-        self.mode = "target"
-        self.set_mode("target")
-        self.period = 0.2 # millisecond between each movement
+        self.x_rate = 0.05
+        self.y_rate = 0.05
 
-        self.laser = LaserManager()
-        self.properties = Properties()
-        self.ballTracker = BallTracker.get_instance()
+        self.mode = "bounce"
+        self.set_mode("bounce")
+        self.period = 0.05 # seconds between each movement
 
 
     # called by GameManager
     def collides_with(self, position, radius):
         x = float(position[0])/100.0 # Converting cm to m
         y = float(position[1])/100.0 # Converting cm to m
-        print("Obst: (", self.xPosition, ", ", self.yPosition, ")")
-        print("Ball: (", x, ", ", y, ")")
-        print("--")
+        #print("Obst: (", self.xPosition, ", ", self.yPosition, ")")
+        #print("Ball: (", x, ", ", y, ")")
+        #print("--")
         #if (not (0 < x and x < self.properties.PLAY_FIELD_WIDTH and 0 < y and y < self.properties.PLAY_FIELD_LENGTH)):
         #    return True
         if ((self.xPosition - radius) <= x <= (self.xPosition + radius)) and (
@@ -47,6 +52,7 @@ class ObstacleManager:
             return True
         else:
             return False
+
 
 
     # called by GameManager
@@ -59,6 +65,8 @@ class ObstacleManager:
         t1.daemon = True
         t1.start()
 
+
+
     # called by GameManager
     def stop_movement(self):
         self.keepMoving = False
@@ -66,29 +74,59 @@ class ObstacleManager:
         print("Obstacle motion stopped.")
 
 
+
     # Only to be run on its own thread
     def move_obstacle(self):
+
+        #print("Obstacle mode:", self.mode)
+
         while self.keepMoving:  # Random motion until stopMovement called
-            # self.xPosition = random.randint(0, 10)
-            # self.yPosition = random.randint(0, 10)
-            print(self.mode)
-            if (self.mode== "target"):
+
+            if self.mode == "target":
                 if self.xTarget == self.xPosition and self.yTarget == self.yPosition:
                     self.xTarget = random.random() * self.properties.PLAY_FIELD_WIDTH
                     self.yTarget = random.random() * self.properties.PLAY_FIELD_LENGTH
-            elif (self.mode == "random"):
+                    self.speed_calc()
+
+
+            elif self.mode == "random":
                 self.xTarget = random.random() * self.properties.PLAY_FIELD_WIDTH
                 self.yTarget = random.random() * self.properties.PLAY_FIELD_LENGTH
+                self.speed_calc()
 
-            self.speed_calc()
+
+            elif self.mode == "bounce":
+                #print ("Bouncing...")
+                if self.xPosition < 0:
+                    self.x_rate = (random.randint(1, 3) / 50.0)
+                    self.y_rate = (random.randint(-3, 3) / 50.0)
+
+                elif self.xPosition > self.properties.PLAY_FIELD_WIDTH:
+                    self.x_rate = -(random.randint(1, 3) / 50.0)
+                    self.y_rate = (random.randint(-3, 3) / 50.0)
+
+                elif self.yPosition < 0:
+                    self.x_rate = (random.randint(-3, 3) / 50.0)
+                    self.y_rate = (random.randint(1, 3) / 50.0)
+
+                elif self.yPosition > self.properties.PLAY_FIELD_LENGTH:
+                    self.x_rate = -(random.randint(-3, 3) / 50.0)
+                    self.y_rate = -(random.randint(1, 3) / 50.0)
+
+                self.nextX = self.xPosition + self.x_rate
+                self.nextY = self.yPosition + self.y_rate
+
 
             self.laser.setPosition(self.nextX, self.nextY)
             self.xPosition = self.nextX
             self.yPosition = self.nextY
-            #print("New position is", self.nextX, self.nextY)
+            #print("Rate:", self.y_rate, self.y_rate)
+            #print("New position is", self.xPosition, self.yPosition)
             time.sleep(self.period)  # wait this many seconds
             # self.xPosition = self.nextX
         # self.yPosition = self.nextY
+
+
 
     def speed_calc(self):
         print("Target" , self.xTarget, self.yTarget)
@@ -110,12 +148,13 @@ class ObstacleManager:
     #			if (self.xPosition == self.nextX and self.yPosition == self.nextY):
     #                time.sleep(1)
 
+
     # Observer function called by any observable class that this class registered to
     def notify(self, *args, **keywordargs):
         # TODO: CHECK ARGUMENTS TO DETERMINE MESSAGE/TYPE - pass on to handlers?
-        if self.mode == "follow":
-            self.xTarget = keywordargs.get('x')
-            self.yTarget = keywordargs.get('y')
+        if self.mode == "follow" and keywordargs.get('x') != None and keywordargs.get('y')!= None:
+            self.nextX = keywordargs.get('x')/100.0
+            self.nextY = keywordargs.get('y')/100.0
 
 
     # Possible modes: "follow", "target", "random"

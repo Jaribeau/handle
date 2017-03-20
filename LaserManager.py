@@ -28,16 +28,23 @@ class LaserManager:
         self.pwmHori.ChangeDutyCycle(80.0/10 +5)
         #self.pwmVert.ChangeDutyCycle(5)
 
+
+
     def start(self):
         self.pwmVert.start(5)
         self.pwmHori.start(5)
         self.laserSwitch(True)
 
-    # Used by ObstacleManager
-    def setPosition(self, x, y):
-        self.xPosition = x
-        self.yPosition = y
 
+
+    # Used by ObstacleManager
+    # x and y in meters
+    def setPosition(self, x, y):
+        self.xPosition = x+0.14
+        self.yPosition = y+0.05
+
+        #print(x,y)
+        
         angles = self.toPolarCoords(self.xPosition, self.yPosition)
 
         #print("Angles: ", angles)
@@ -48,19 +55,29 @@ class LaserManager:
         self.pwmHori.ChangeDutyCycle(dutyhori)
         self.pwmVert.ChangeDutyCycle(dutyvert)
 
+        time.sleep(0.05)
+        self.pwmHori.ChangeDutyCycle(0)
+        self.pwmVert.ChangeDutyCycle(0)
+
     # Used by ObstacleManager
     def getXPosition(self):
         return self.xPosition
 
+
+
     # Used by ObstacleManager
     def getYPosition(self):
         return self.yPosition
+
+
 
     # Used by ObstacleManager
     def stop(self):
         self.pwmHori.stop()
         self.pwmVert.stop()
         self.laserSwitch(False)
+
+
 
     def toPolarCoords(self, x, y):
         myX = float(x) - (self.properties.PLAY_FIELD_WIDTH / 2)
@@ -76,6 +93,8 @@ class LaserManager:
 
         return horiAngle, vertAngle
 
+
+
     # theta = horizontal angle
     # phi = vertical angle
     def toCartesianCoords(self, theta, phi):
@@ -86,6 +105,8 @@ class LaserManager:
         y = x * math.tan(theta)
 
         return x, y
+
+
 
     # turns laser off if false, turns on if true
     def laserSwitch(self, laserOn):
