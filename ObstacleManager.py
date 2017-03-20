@@ -26,6 +26,7 @@ class ObstacleManager:
         self.nextX = 0.0
         self.nextY = 0.0
 
+        self.mode = "target"
         self.set_mode("target")
         self.period = 0.001 # millisecond between each movement
 
@@ -93,7 +94,7 @@ class ObstacleManager:
         xDiff = self.xTarget - self.xPosition
         yDiff = self.yTarget - self.yPosition
         maxDisp = self.speed * self.period
-        if (math.sqrt(math.pow(xDiff,2) + math.pow(yDiff,2) > maxDisp)):
+        if (math.sqrt(math.pow(xDiff,2) + math.pow(yDiff,2)) > maxDisp):
             angle = math.tan(yDiff/xDiff)
             self.nextX = self.nextX + (maxDisp*math.cos(angle))
             self.nextY = self.nextY + (maxDisp*math.sin(angle))
