@@ -31,6 +31,7 @@ class GameManager:
         while self.gameOn:
             self.timeRemaining -= 1
             if self.frame is not None:
+                frame = imutils.resize(frame, width=500)
                 cv2.imshow("Ball Tracking", self.frame)
                 cv2.waitKey(1)
 
