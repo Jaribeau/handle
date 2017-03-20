@@ -31,7 +31,7 @@ class ObstacleManager:
 
         self.laser = LaserManager()
         self.properties = Properties()
-        self.ballTracker = BallTracker()
+        self.ballTracker = BallTracker.get_instance()
 
 
     # called by GameManager

@@ -3,13 +3,25 @@
 
 import cv2
 import threading
-# import random
 import time
-import imutils
+import numpy as np
 
 
 class BallTracker:
-    # Make this private
+
+    # Singleton instance
+    instance = None
+
+
+    @staticmethod
+    def get_instance():
+        if BallTracker.instance is None:
+            BallTracker.instance = BallTracker()
+
+        return BallTracker.instance
+
+
+
     def __init__(self):
         self.ballTrackingEnabled = False
         self.xBallPosition = None
@@ -17,9 +29,18 @@ class BallTracker:
         self.lastUpdated = time.localtime()
         self.ballRadius = 1  # NOTE: This is a magic number and should be moved to a "physical properties" class
         self.observers = []
+        self.deskew_matrix = None
+        try:
+            self.deskew_matrix = np.loadtxt("deskew_matrix.txt")
+        except:
+            print("WARNING: No deskew matrix found. Please re-run calibration to map the playing area.")
 
-    # TODO: Make singleton
-    # def getInstance(self):
+        # Singleton logic
+        if BallTracker.instance is None:
+            BallTracker.instance = self
+        else:
+            print("WARNING: You are creating an instance directly in a class intended to be a singleton. "
+                  "Use BallTracker.get_instance() instead.")
 
 
 
@@ -32,11 +53,6 @@ class BallTracker:
         t1 = threading.Thread(target=self.track_ball)
         t1.daemon = True
         t1.start()
-
-    # Listen for keyboard input to manually trigger ball tracking commands
-    # t2 = threading.Thread(target = self.readKeyboardInput())
-    # t2.daemon = True
-    # t2.start()
 
 
 
@@ -69,20 +85,23 @@ class BallTracker:
 
         # keep looping
         while self.ballTrackingEnabled:
-            # self.xBallPosition = random.randint(0, 10)  # temp placeholder for vision tracking results
-            # self.yBallPosition = random.randint(0, 10)  # temp placeholder for vision tracking results
 
             # grab the current frame
-            (grabbed, frame) = camera.read()
+            (grabbed, frame_distorted) = camera.read() # grab the current frame
+            destination_img_size = (100, 100, 3)
 
-            # if we are viewing a video and we did not grab a frame,
-            # then we have reached the end of the video
+            # Deskew the camera input to make the playing field a grid
+            if self.deskew_matrix is not None:
+                frame = cv2.warpPerspective(frame_distorted, self.deskew_matrix, destination_img_size[0:2])
+            else:
+                frame = frame_distorted
+
+            # check for end of video
             if video and not grabbed:
                 break
 
             # resize the frame, blur it, and convert it to the HSV
             # color space
-            frame = imutils.resize(frame, width=600)
             # blurred = cv2.GaussianBlur(frame, (11, 11), 0)
             hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
@@ -109,8 +128,8 @@ class BallTracker:
                 ((x, y), radius) = cv2.minEnclosingCircle(c)
                 M = cv2.moments(c)
                 center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
-                self.xBallPosition = center[0]/10
-                self.yBallPosition = center[1]/10
+                self.xBallPosition = center[0]
+                self.yBallPosition = center[1]
 
                 # only proceed if the radius meets a minimum size
                 if radius > 1:
@@ -126,15 +145,6 @@ class BallTracker:
                                    y=self.yBallPosition,
                                    updated_at=self.lastUpdated,
                                    frame=frame)
-
-            # show the frame to our screen
-            # TODO: Move this to the main thread
-            # cv2.imshow("Ball Tracking", frame)
-            # key = cv2.waitKey(1) & 0xFF
-
-            # if the 'q' key is pressed, stop the loop
-            # if key == ord("q"):
-            #     break
 
         # cleanup the camera and close any open windows
         camera.release()

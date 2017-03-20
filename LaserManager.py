@@ -89,7 +89,7 @@ class LaserManager:
 
     # turns laser off if false, turns on if true
     def laserSwitch(self, laserOn):
-		GPIO.output(15, laserOn)
+        GPIO.output(15, laserOn)
 
 
 #    userInput = ''
