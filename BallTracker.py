@@ -27,11 +27,13 @@ class BallTracker:
         self.xBallPosition = None
         self.yBallPosition = None
         self.lastUpdated = time.localtime()
-        self.ballRadius = 1  # NOTE: This is a magic number and should be moved to a "physical properties" class
+        self.ballRadius = 0.07  # NOTE: This is a magic number and should be moved to a "physical properties" class
         self.observers = []
         self.deskew_matrix = None
         try:
             self.deskew_matrix = np.loadtxt("deskew_matrix.txt")
+            print("Loaded deskew matrix from calibration file.")
+            print(self.deskew_matrix)
         except:
             print("WARNING: No deskew matrix found. Please re-run calibration to map the playing area.")
 
@@ -69,9 +71,9 @@ class BallTracker:
         # list of tracked points
         # For HSV, Hue range is [0,179], Saturation range is [0,255] and Value range is [0,255]
         # HSV Info: http://infohost.nmt.edu/tcc/help/pubs/colortheory/web/hsv.html
-        yellow_lower_threshold = (160, 100, 140)
+        yellow_lower_threshold = (160, 100, 40)
         yellow_upper_threshold = (179, 255, 255)
-        red_lower_threshold = (0, 100, 140)
+        red_lower_threshold = (0, 100, 40)
         red_upper_threshold = (20, 255, 255)
 
         # if a video path was not supplied, grab the reference
@@ -140,9 +142,14 @@ class BallTracker:
 
             # send update of ball location
             self.lastUpdated = time.clock()
+            if self.yBallPosition is not None:
+                y_flipped = 100-self.yBallPosition
+            else:
+                y_flipped = self.yBallPosition
+                
             self.push_notification("Location Updated:",
                                    x=self.xBallPosition,
-                                   y=self.yBallPosition,
+                                   y=y_flipped,
                                    updated_at=self.lastUpdated,
                                    frame=frame)
 
