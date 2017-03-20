@@ -26,7 +26,7 @@ class ObstacleManager:
         self.nextX = 0.0
         self.nextY = 0.0
 
-        self.mode = "follow"
+        self.set_mode("target")
         self.period = 0.001 # millisecond between each movement
 
         self.laser = LaserManager()
@@ -84,7 +84,7 @@ class ObstacleManager:
             self.speed_calc()
 
             self.laser.setPosition(self.nextX, self.nextY)
-            print("New position is", self.nextX, self.nextY)
+            #print("New position is", self.nextX, self.nextY)
             time.sleep(self.period)  # wait this many seconds
             # self.xPosition = self.nextX
         # self.yPosition = self.nextY
@@ -114,7 +114,7 @@ class ObstacleManager:
         self.nextY = keywordargs.get('y')
 
 
-    # Possible modes: "follow", "track", "random"
+    # Possible modes: "follow", "target", "random"
     def set_mode(self, newMode):
         if newMode == "follow" and self.mode != "follow":
             self.ballTracker.register(self)
