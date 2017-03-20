@@ -17,6 +17,7 @@ class GameManager:
         self.difficulty = difficulty
         self.gameOn = False
         self.frame = None
+        self.score = 0
 
 
 
@@ -32,6 +33,8 @@ class GameManager:
         while self.gameOn:
             self.timeRemaining -= 1
             if self.frame is not None:
+                cv2.putText(self.frame, self.score, (10, 50), cv2.FONT_ITALIC, 1, 255)
+                cv2.putText(self.frame, "X", (self.obstacle.xPosition, self.obstacle.yPosition), cv2.FONT_ITALIC, 1, 255)
                 self.frame = imutils.resize(self.frame, width=500)
                 cv2.imshow("Ball Tracking", self.frame)
                 cv2.waitKey(1)
@@ -59,6 +62,7 @@ class GameManager:
                 and keywordargs.get('y') is not None \
                 and self.obstacle.collides_with([keywordargs.get('x'), keywordargs.get('y')], self.ballTracker.get_ball_radius()):
             print ("------- Collision!!! --------")
+            self.score += 1
             #self.end_game()
 
 
