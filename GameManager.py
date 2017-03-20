@@ -53,7 +53,9 @@ class GameManager:
         self.frame = keywordargs.get('frame')
 
         # TODO: CHECK ARGUMENTS TO DETERMINE MESSAGE/TYPE - pass on to handlers?
-        if self.obstacle.collides_with([keywordargs.get('x'), keywordargs.get('y')], self.ballTracker.get_ball_radius()):
+        if keywordargs.get('x') is not None \
+                and keywordargs.get('y') is not None \
+                and self.obstacle.collides_with([keywordargs.get('x'), keywordargs.get('y')], self.ballTracker.get_ball_radius()):
             print ("------- Collision!!! --------")
             self.end_game()
 
