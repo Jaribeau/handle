@@ -43,7 +43,7 @@ class LaserManager:
         self.xPosition = x+0.14
         self.yPosition = y+0.05
 
-        print(x,y)
+        #print(x,y)
         
         angles = self.toPolarCoords(self.xPosition, self.yPosition)
 
@@ -55,7 +55,7 @@ class LaserManager:
         self.pwmHori.ChangeDutyCycle(dutyhori)
         self.pwmVert.ChangeDutyCycle(dutyvert)
 
-        time.sleep(0.2)
+        time.sleep(0.05)
         self.pwmHori.ChangeDutyCycle(0)
         self.pwmVert.ChangeDutyCycle(0)
 

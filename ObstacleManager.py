@@ -30,12 +30,12 @@ class ObstacleManager:
         self.nextX = 0.0
         self.nextY = 0.0
 
-        self.x_rate = 0.1
-        self.y_rate = 0.1
+        self.x_rate = 0.05
+        self.y_rate = 0.05
 
         self.mode = "bounce"
         self.set_mode("bounce")
-        self.period = 0.5 # seconds between each movement
+        self.period = 0.05 # seconds between each movement
 
 
     # called by GameManager
@@ -78,7 +78,7 @@ class ObstacleManager:
     # Only to be run on its own thread
     def move_obstacle(self):
 
-        print("Obstacle mode:", self.mode)
+        #print("Obstacle mode:", self.mode)
 
         while self.keepMoving:  # Random motion until stopMovement called
 
@@ -96,22 +96,22 @@ class ObstacleManager:
 
 
             elif self.mode == "bounce":
-                print ("Bouncing...")
+                #print ("Bouncing...")
                 if self.xPosition < 0:
-                    self.x_rate = (random.randint(1, 3) / 10.0)
-                    self.y_rate = (random.randint(-3, 3) / 10.0)
+                    self.x_rate = (random.randint(1, 3) / 50.0)
+                    self.y_rate = (random.randint(-3, 3) / 50.0)
 
                 elif self.xPosition > self.properties.PLAY_FIELD_WIDTH:
-                    self.x_rate = -(random.randint(1, 3) / 10.0)
-                    self.y_rate = (random.randint(-3, 3) / 10.0)
+                    self.x_rate = -(random.randint(1, 3) / 50.0)
+                    self.y_rate = (random.randint(-3, 3) / 50.0)
 
                 elif self.yPosition < 0:
-                    self.x_rate = (random.randint(-3, 3) / 10.0)
-                    self.y_rate = (random.randint(1, 3) / 10.0)
+                    self.x_rate = (random.randint(-3, 3) / 50.0)
+                    self.y_rate = (random.randint(1, 3) / 50.0)
 
                 elif self.yPosition > self.properties.PLAY_FIELD_LENGTH:
-                    self.x_rate = -(random.randint(-3, 3) / 10.0)
-                    self.y_rate = -(random.randint(1, 3) / 10.0)
+                    self.x_rate = -(random.randint(-3, 3) / 50.0)
+                    self.y_rate = -(random.randint(1, 3) / 50.0)
 
                 self.nextX = self.xPosition + self.x_rate
                 self.nextY = self.yPosition + self.y_rate
@@ -120,8 +120,8 @@ class ObstacleManager:
             self.laser.setPosition(self.nextX, self.nextY)
             self.xPosition = self.nextX
             self.yPosition = self.nextY
-            print("Rate:", self.y_rate, self.y_rate)
-            print("New position is", self.xPosition, self.yPosition)
+            #print("Rate:", self.y_rate, self.y_rate)
+            #print("New position is", self.xPosition, self.yPosition)
             time.sleep(self.period)  # wait this many seconds
             # self.xPosition = self.nextX
         # self.yPosition = self.nextY
