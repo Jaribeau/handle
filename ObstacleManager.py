@@ -42,9 +42,9 @@ class ObstacleManager:
         print("Obst: (", self.xPosition, ", ", self.yPosition, ")")
         print("Ball: (", x, ", ", y, ")")
         print("--")
-        if (not (0 < x and x < self.properties.PLAY_FIELD_WIDTH and 0 < y and y < self.properties.PLAY_FIELD_LENGTH)):
-            return True
-        elif ((self.xPosition - radius) <= x <= (self.xPosition + radius)) and (
+        #if (not (0 < x and x < self.properties.PLAY_FIELD_WIDTH and 0 < y and y < self.properties.PLAY_FIELD_LENGTH)):
+        #    return True
+        if ((self.xPosition - radius) <= x <= (self.xPosition + radius)) and (
                 (self.yPosition - radius) <= y <= (self.yPosition + radius)):
             return True
         else:
