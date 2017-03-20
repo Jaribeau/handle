@@ -3,6 +3,7 @@
 import random
 import threading
 import time
+import math
 
 from LaserManager import LaserManager
 from Properties import Properties
@@ -15,17 +16,19 @@ class ObstacleManager:
         self.yPosition = 0
         self.keepMoving = False
 
-        self.speed = 0.5
+        self.speed = 0.25
         self.xSpeed = 0.0
         self.ySpeed = 0.0
 
         self.xTarget = 0.0
-        self.YTarget = 0.0
+        self.yTarget = 0.0
 
         self.nextX = 0.0
         self.nextY = 0.0
 
-        self.mode = "follow"
+        self.mode = "target"
+        self.set_mode("target")
+        self.period = 0.001 # millisecond between each movement
 
         self.laser = LaserManager()
         self.properties = Properties()
@@ -34,8 +37,8 @@ class ObstacleManager:
 
     # called by GameManager
     def collides_with(self, position, radius):
-        x = position[0]
-        y = position[1]
+        x = float(position[0])/100.0 # Converting cm to m
+        y = float(position[1])/100.0 # Converting cm to m
         print("Obst: (", self.xPosition, ", ", self.yPosition, ")")
         print("Ball: (", x, ", ", y, ")")
         print("--")
@@ -48,8 +51,7 @@ class ObstacleManager:
             return False
 
 
-        # called by GameManager
-
+    # called by GameManager
     def start_movement(self):
         # Start obstacle movement thread
         print("start movement.")
@@ -66,25 +68,39 @@ class ObstacleManager:
         print("Obstacle motion stopped.")
 
 
-# Only to be run on its own thread
+    # Only to be run on its own thread
     def move_obstacle(self):
         while self.keepMoving:  # Random motion until stopMovement called
             # self.xPosition = random.randint(0, 10)
             # self.yPosition = random.randint(0, 10)
 
-            # if (self.mode== "follow"):
-            #     self.nextX = self.nextX
-            #     self.nextY = self.nextY
-            # elif (self.mode == random):
-            #     self.nextX = random.random() * self.properties.PLAY_FIELD_WIDTH
-            #     self.nextY = random.random() * self.properties.PLAY_FIELD_LENGTH
+            if (self.mode== "target"):
+                if self.xTarget == self.xPosition and self.yTarget == self.xPosition:
+                    self.xTarget = random.random() * self.properties.PLAY_FIELD_WIDTH
+                    self.yTarget = random.random() * self.properties.PLAY_FIELD_LENGTH
+            elif (self.mode == "random"):
+                self.xTarget = random.random() * self.properties.PLAY_FIELD_WIDTH
+                self.yTarget = random.random() * self.properties.PLAY_FIELD_LENGTH
 
+            self.speed_calc()
 
             self.laser.setPosition(self.nextX, self.nextY)
-            print("New position is", self.nextX, self.nextY)
-            time.sleep(1)  # wait 0.75 second
+            #print("New position is", self.nextX, self.nextY)
+            time.sleep(self.period)  # wait this many seconds
             # self.xPosition = self.nextX
         # self.yPosition = self.nextY
+
+    def speed_calc(self):
+        xDiff = self.xTarget - self.xPosition
+        yDiff = self.yTarget - self.yPosition
+        maxDisp = self.speed * self.period
+        if (math.sqrt(math.pow(xDiff,2) + math.pow(yDiff,2)) > maxDisp):
+            angle = math.tan(yDiff/xDiff)
+            self.nextX = self.nextX + (maxDisp*math.cos(angle))
+            self.nextY = self.nextY + (maxDisp*math.sin(angle))
+        else:
+            self.nextX = self.xTarget
+            self.nextY = self.yTarget
 
     # Only to be run on its own thread
     #	def next_step(self):
@@ -98,9 +114,15 @@ class ObstacleManager:
         self.nextX = keywordargs.get('x')
         self.nextY = keywordargs.get('y')
 
+
+    # Possible modes: "follow", "target", "random"
     def set_mode(self, newMode):
-        self.mode = newMode
-        if newMode == "follow":
+        if newMode == "follow" and self.mode != "follow":
             self.ballTracker.register(self)
-        else:
+        elif newMode != "follow" and self.mode == "follow":
             self.ballTracker.unregister(self)
+
+        self.mode = newMode
+
+    def set_speed(self, newSpeed):
+        self.speed = newSpeed

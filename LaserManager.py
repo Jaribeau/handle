@@ -40,7 +40,7 @@ class LaserManager:
 
         angles = self.toPolarCoords(self.xPosition, self.yPosition)
 
-        print("Angles: ", angles)
+        #print("Angles: ", angles)
 
         dutyhori = float(angles[0] + 90.0) / 10.0 + 5
         dutyvert = float(angles[1]) / 10.0 + 6.72
