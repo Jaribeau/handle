@@ -12,6 +12,10 @@ from BallTracker import BallTracker
 class ObstacleManager:
 
     def __init__(self):
+        self.laser = LaserManager()
+        self.properties = Properties()
+        self.ballTracker = BallTracker.get_instance()
+        
         self.xPosition = 0
         self.yPosition = 0
         self.keepMoving = False
@@ -25,21 +29,17 @@ class ObstacleManager:
         self.nextY = 0.0
 
         self.mode = "target"
-        self.set_mode("target")
-        self.period = 0.2 # millisecond between each movement
-
-        self.laser = LaserManager()
-        self.properties = Properties()
-        self.ballTracker = BallTracker.get_instance()
+        self.set_mode("follow")
+        self.period = 0.75 # seconds between each movement
 
 
     # called by GameManager
     def collides_with(self, position, radius):
         x = float(position[0])/100.0 # Converting cm to m
         y = float(position[1])/100.0 # Converting cm to m
-        print("Obst: (", self.xPosition, ", ", self.yPosition, ")")
-        print("Ball: (", x, ", ", y, ")")
-        print("--")
+        #print("Obst: (", self.xPosition, ", ", self.yPosition, ")")
+        #print("Ball: (", x, ", ", y, ")")
+        #print("--")
         #if (not (0 < x and x < self.properties.PLAY_FIELD_WIDTH and 0 < y and y < self.properties.PLAY_FIELD_LENGTH)):
         #    return True
         if ((self.xPosition - radius) <= x <= (self.xPosition + radius)) and (
@@ -80,7 +80,7 @@ class ObstacleManager:
                 self.xTarget = random.random() * self.properties.PLAY_FIELD_WIDTH
                 self.yTarget = random.random() * self.properties.PLAY_FIELD_LENGTH
 
-            self.speed_calc()
+            #self.speed_calc()
 
             self.laser.setPosition(self.nextX, self.nextY)
             self.xPosition = self.nextX
@@ -113,9 +113,9 @@ class ObstacleManager:
     # Observer function called by any observable class that this class registered to
     def notify(self, *args, **keywordargs):
         # TODO: CHECK ARGUMENTS TO DETERMINE MESSAGE/TYPE - pass on to handlers?
-        if self.mode == "follow":
-            self.xTarget = keywordargs.get('x')
-            self.yTarget = keywordargs.get('y')
+        if self.mode == "follow" and keywordargs.get('x') != None and keywordargs.get('y')!= None:
+            self.nextX = keywordargs.get('x')/100.0
+            self.nextY = keywordargs.get('y')/100.0
 
 
     # Possible modes: "follow", "target", "random"
