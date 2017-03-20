@@ -17,8 +17,6 @@ class ObstacleManager:
         self.keepMoving = False
 
         self.speed = 0.25
-        self.xSpeed = 0.0
-        self.ySpeed = 0.0
 
         self.xTarget = 0.0
         self.yTarget = 0.0
@@ -28,7 +26,7 @@ class ObstacleManager:
 
         self.mode = "target"
         self.set_mode("target")
-        self.period = 0.1 # millisecond between each movement
+        self.period = 0.2 # millisecond between each movement
 
         self.laser = LaserManager()
         self.properties = Properties()
@@ -75,7 +73,7 @@ class ObstacleManager:
             # self.yPosition = random.randint(0, 10)
 
             if (self.mode== "target"):
-                if self.xTarget == self.xPosition and self.yTarget == self.xPosition:
+                if self.xTarget == self.xPosition and self.yTarget == self.yPosition:
                     self.xTarget = random.random() * self.properties.PLAY_FIELD_WIDTH
                     self.yTarget = random.random() * self.properties.PLAY_FIELD_LENGTH
             elif (self.mode == "random"):
