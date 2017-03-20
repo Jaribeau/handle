@@ -40,9 +40,11 @@ class LaserManager:
     # Used by ObstacleManager
     # x and y in meters
     def setPosition(self, x, y):
-        self.xPosition = x
+        self.xPosition = x+0.15
         self.yPosition = y
 
+        print(x,y)
+        
         angles = self.toPolarCoords(self.xPosition, self.yPosition)
 
         #print("Angles: ", angles)
@@ -53,7 +55,13 @@ class LaserManager:
         self.pwmHori.ChangeDutyCycle(dutyhori)
         self.pwmVert.ChangeDutyCycle(dutyvert)
 
+<<<<<<< HEAD
 
+=======
+        time.sleep(0.4)
+        self.pwmHori.ChangeDutyCycle(0)
+        self.pwmVert.ChangeDutyCycle(0)
+>>>>>>> 3ad528dd7ecd7b4599239db0b7463973a598fb64
 
     # Used by ObstacleManager
     def getXPosition(self):
