@@ -5,11 +5,14 @@ from GameManager import GameManager
 from ObstacleManager import ObstacleManager
 # from LaserManager import LaserManager
 
-game = GameManager()
-game.start_game()
-
+# game = GameManager()
+# game.start_game()
+#
 obstacle = ObstacleManager()
 obstacle.start_movement()
+
+while True:
+    x = 0
 
 # laser = LaserManager()
 # laser.start()

@@ -142,7 +142,7 @@ class BallTracker:
             self.lastUpdated = time.clock()
             self.push_notification("Location Updated:",
                                    x=self.xBallPosition,
-                                   y=self.yBallPosition,
+                                   y=100-self.yBallPosition,    # Move origin to bottom left corner
                                    updated_at=self.lastUpdated,
                                    frame=frame)
 
