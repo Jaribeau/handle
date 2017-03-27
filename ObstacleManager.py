@@ -5,7 +5,7 @@ import threading
 import time
 import math
 
-# from LaserManager import LaserManager
+from LaserManager import LaserManager
 from Properties import Properties
 from BallTracker import BallTracker
 
@@ -15,12 +15,12 @@ class ObstacleManager:
 
 
     def __init__(self):
-        # self.laser = LaserManager()
+        self.laser = LaserManager()
         self.properties = Properties()
         self.ballTracker = BallTracker.get_instance()
 
         self.xPosition = 50
-        self.yPosition = 10
+        self.yPosition = 50
         self.keepMoving = False
 
         self.speed = 0.01
@@ -29,7 +29,7 @@ class ObstacleManager:
         self.yTarget = 0.0
 
         self.nextX = 50
-        self.nextY = 10
+        self.nextY = 50
 
         self.x_rate = 1
         self.y_rate = 1
@@ -55,7 +55,7 @@ class ObstacleManager:
         # Check for collision
         if x is not None and y is not None and \
                 ((self.xPosition - radius) <= x <= (self.xPosition + radius)) and \
-                ((self.yPosition - radius) <= y <= (self.yPosition + radius)):
+                ((Properties.GRID_SIZE_Y - self.yPosition - radius) <= y <= (Properties.GRID_SIZE_Y - self.yPosition + radius)):
             print("Ball:    " + str(x) + ", " + str(y))
             print("Obstacle:" + str(self.xPosition) + ", " + str(self.yPosition))
             return True
@@ -72,7 +72,7 @@ class ObstacleManager:
     def start_movement(self):
         # Start obstacle movement thread
         print("start movement.")
-        # self.laser.start()
+        self.laser.start()
         self.keepMoving = True
         t1 = threading.Thread(target=self.move_obstacle)
         t1.daemon = True
@@ -83,7 +83,7 @@ class ObstacleManager:
     # called by GameManager
     def stop_movement(self):
         self.keepMoving = False
-        # self.laser.stop()
+        self.laser.stop()
         print("Obstacle motion stopped.")
 
 
@@ -96,8 +96,8 @@ class ObstacleManager:
         while self.keepMoving:  # Random motion until stopMovement called
 
             if self.mode == "fixed":
-                self.nextX = self.properties.PLAY_FIELD_WIDTH / 2
-                self.nextY = self.properties.PLAY_FIELD_LENGTH / 2
+                self.nextX = self.properties.GRID_SIZE_X / 2
+                self.nextY = self.properties.GRID_SIZE_Y / 2
 
 
             elif self.mode == "target":
@@ -134,7 +134,7 @@ class ObstacleManager:
                 self.nextY = self.yPosition + self.y_rate
 
 
-            # self.laser.setPosition(self.nextX, self.nextY)
+            self.laser.setPosition(self.nextX / float(Properties.GRID_SIZE_X), self.nextY / float(Properties.GRID_SIZE_Y))
             self.xPosition = self.nextX
             self.yPosition = self.nextY
             time.sleep(self.period)  # wait this many seconds

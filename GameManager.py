@@ -71,7 +71,7 @@ class GameManager:
                 if self.frame is not None:
                     # cv2.putText(self.frame, "Score:" + str(self.score), (5, 10), cv2.FONT_ITALIC, 0.5, 255)
                     # cv2.putText(self.frame, "o", (int(self.obstacle.xPosition * Properties.GRID_SIZE_X)-25, Properties.GRID_SIZE_Y - int(self.obstacle.yPosition * Properties.GRID_SIZE_Y)+20), cv2.FONT_HERSHEY_SIMPLEX, 3, 0)
-                    cv2.circle(self.frame, (int(self.obstacle.xPosition), int(self.obstacle.xPosition)), int(Properties.BALL_RADIUS), (0, 255, 255), 5)
+                    cv2.circle(self.frame, (int(self.obstacle.xPosition), Properties.GRID_SIZE_Y - int(self.obstacle.yPosition)), int(Properties.BALL_RADIUS), (255, 0, 255), 1)
                     self.frame = imutils.resize(self.frame, width=Properties.GRID_DISPLAY_SIZE_X)
                     # cv2.imshow(self.window, self.frame)
 
