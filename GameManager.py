@@ -25,6 +25,9 @@ class GameManager:
         self.game_up_to_date = True
         self.message = ""
         self.average_latency = 0
+        self.latency_in = 0
+        self.obstacle_x = 0
+        self.obstacle_y = 0
 
 
 
@@ -75,7 +78,7 @@ class GameManager:
                     self.frame = imutils.resize(self.frame, width=Properties.GRID_DISPLAY_SIZE_X)
                     # cv2.imshow(self.window, self.frame)
 
-                if self.obstacle.collides_with([self.ballTracker.xBallPosition, self.ballTracker.yBallPosition], Properties.BALL_RADIUS):
+                if self.timeElapsed > 5 and self.collides_with([self.ballTracker.xBallPosition, self.ballTracker.yBallPosition], [self.obstacle_x, self.obstacle_y], Properties.BALL_RADIUS):
                     print("------- Collision!!! -------- SCORE: -", self.score)
                     self.message = "GAME OVER\nSCORE: " + str(self.score)
                     self.push_notification("update",
@@ -121,6 +124,38 @@ class GameManager:
 
 
 
+    # called by GameManager
+    def collides_with(self, ball_position, obstacle_position, radius):
+
+        if ball_position[0] is None or ball_position[1] is None:
+            ball_x = None
+            ball_y = None
+        else:
+            ball_x = float(ball_position[0])
+            ball_y = float(ball_position[1])
+
+        if obstacle_position[0] is None or obstacle_position[1] is None:
+            obstacle_x = None
+            obstacle_y = None
+        else:
+            obstacle_x = float(obstacle_position[0])
+            obstacle_y = float(obstacle_position[1])
+
+        print("Ball:    " + str(ball_x) + ", " + str(ball_y))
+        print("Obstacle:" + str(obstacle_x) + ", " + str(obstacle_y))
+
+        # Check for collision
+        if obstacle_x is not None and obstacle_y is not None and \
+                ((obstacle_x - radius) <= ball_x <= (obstacle_x + radius)) and \
+                ((Properties.GRID_SIZE_Y - obstacle_y - radius) <= ball_y <= (Properties.GRID_SIZE_Y - obstacle_y + radius)):
+            print("Ball:    " + str(obstacle_x) + ", " + str(obstacle_y))
+            print("Obstacle:" + str(obstacle_x) + ", " + str(obstacle_y))
+            return True
+        else:
+            return False
+
+
+
     # Observer function called by any observable class that this class registered to
     def notify(self, *args, **keywordargs):
 
@@ -128,6 +163,11 @@ class GameManager:
         if keywordargs.get('frame') is not None:
             self.frame = keywordargs.get('frame')
             self.latency_in = keywordargs.get('latency')
+
+        if keywordargs.get('new_frame_being_processed') is True:
+            # Grab the obstacle location the corresponds to the timing of THIS frame
+            self.obstacle_x = self.obstacle.xPosition
+            self.obstacle_y = self.obstacle.yPosition
 
         # # TODO: CHECK ARGUMENTS TO DETERMINE MESSAGE/TYPE - pass on to handlers?
         # if keywordargs.get('x') is not None and keywordargs.get('y') is not None:
