@@ -24,6 +24,7 @@ class GameManager:
         self.score = 0
         self.game_up_to_date = True
         self.message = ""
+        self.average_latency = 0
 
 
 
@@ -68,7 +69,7 @@ class GameManager:
 
                 # Regular gameplay
                 if self.frame is not None:
-                    cv2.putText(self.frame, "Score:" + str(self.score), (5, 10), cv2.FONT_ITALIC, 0.5, 255)
+                    # cv2.putText(self.frame, "Score:" + str(self.score), (5, 10), cv2.FONT_ITALIC, 0.5, 255)
                     cv2.putText(self.frame, "o", (int(self.obstacle.xPosition * Properties.GRID_SIZE_X)-25, Properties.GRID_SIZE_Y - int(self.obstacle.yPosition * Properties.GRID_SIZE_Y)+20), cv2.FONT_HERSHEY_SIMPLEX, 3, 0)
                     self.frame = imutils.resize(self.frame, width=Properties.GRID_SIZE_X)
                     # cv2.imshow(self.window, self.frame)
@@ -91,13 +92,17 @@ class GameManager:
 
                 # Notify subscribers that game state has been updated
                 latency_out = self.latency_in + time.clock() - time_update_started
+                if self.average_latency == 0:
+                    self.average_latency = latency_out
+                else:
+                    self.average_latency += (latency_out - self.average_latency)/10
                 self.push_notification("update",
                                        message=self.message,
                                        frame=self.frame,
                                        timeRemaining=self.timeElapsed,
                                        gameOn=self.gameOn,
                                        score=self.score,
-                                       latency=latency_out
+                                       latency=self.average_latency
                                        )
                 self.game_up_to_date = True
 

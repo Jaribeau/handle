@@ -142,7 +142,7 @@ class BallTracker:
                     # cv2.circle(img, center, radius, color[, thickness[, lineType[, shift]]]) returns: img
                     cv2.circle(frame, center, int(Properties.BALL_RADIUS * Properties.GRID_SIZE_X), (0, 255, 255), 5)
                     # cv2.circle(frame, (int(x), int(y)), int(radius), (0, 255, 255), 5)
-                    cv2.circle(frame, center, int(Properties.BALL_RADIUS * Properties.GRID_SIZE_X / 5), (0, 255, 255), -1)
+                    # cv2.circle(frame, center, int(Properties.BALL_RADIUS * Properties.GRID_SIZE_X / 5), (0, 255, 255), -1)
 
             # send update of ball location
             processing_time = time.clock() - processing_start_time
