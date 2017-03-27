@@ -3,6 +3,7 @@
 
 
 import RPi.GPIO as GPIO
+import pigpio
 import time
 import sys
 import math
@@ -12,27 +13,33 @@ from Properties import Properties
 
 class LaserManager:
     def __init__(self):
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setup(2, GPIO.OUT) # vertical servo
-        GPIO.setup(14, GPIO.OUT) # horizontal servo
-        GPIO.setup(15, GPIO.OUT)  # laser
+        self.DC_LOW = 125000 # Empirically determined duty cycle that gives 0 degrees
+        self.DC_HIGH = 475000 # Empirically determined duty cycle that gives 180 degrees
+        self.DC_DIFF = self.DC_HIGH - self.DC_LOW  # Difference between high and low dc
+        self.PWM_FREQ = 200  # PWM Frequency
 
-        self.pwmVert = GPIO.PWM(2, 100)
-        self.pwmHori = GPIO.PWM(14, 100)
+        self.HORI_PIN = 19
+        self.VERT_PIN = 18
+        self.LASER_PIN = 26
+        
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(self.LASER_PIN, GPIO.OUT)  # laser
 
         self.xPosition = 0
         self.yPosition = 0
 
         self.properties = Properties()
 
-        self.pwmHori.ChangeDutyCycle(80.0/10 +5)
-        #self.pwmVert.ChangeDutyCycle(5)
+        self.pi = pigpio.pi()
+        self.pi.set_mode(self.VERT_PIN, pigpio.OUTPUT)   # Vertical Servo
+        self.pi.set_mode(self.HORI_PIN, pigpio.OUTPUT)   # Horizontal Servo
+
+        self.pi.hardware_PWM(self.VERT_PIN, self.PWM_FREQ, int((self.DC_HIGH+self.DC_LOW)/2))
+        self.pi.hardware_PWM(self.HORI_PIN, self.PWM_FREQ, int((self.DC_HIGH+self.DC_LOW)/2))
 
 
-
+    # Used by ObstacleManager
     def start(self):
-        self.pwmVert.start(5)
-        self.pwmHori.start(5)
         self.laserSwitch(True)
 
 
@@ -40,8 +47,8 @@ class LaserManager:
     # Used by ObstacleManager
     # x and y in meters
     def setPosition(self, x, y):
-        self.xPosition = x+0.14
-        self.yPosition = y+0.05
+        self.xPosition = float(x) +0.07
+        self.yPosition = float(y)
 
         #print(x,y)
         
@@ -49,20 +56,16 @@ class LaserManager:
 
         #print("Angles: ", angles)
 
-        dutyhori = float(angles[0] + 90.0) / 10.0 + 5
-        dutyvert = float(angles[1]) / 10.0 + 6.72
+        dutyhori = ((float(angles[0] + 90.0)/180) * self.DC_DIFF) + self.DC_LOW
+        dutyvert = ((float(angles[1] + 15.0)/180) * self.DC_DIFF) + self.DC_LOW
 
-        self.pwmHori.ChangeDutyCycle(dutyhori)
-        self.pwmVert.ChangeDutyCycle(dutyvert)
+        self.pi.hardware_PWM(self.VERT_PIN, self.PWM_FREQ, int(dutyvert))
+        self.pi.hardware_PWM(self.HORI_PIN, self.PWM_FREQ, int(dutyhori))
 
-        time.sleep(0.05)
-        self.pwmHori.ChangeDutyCycle(0)
-        self.pwmVert.ChangeDutyCycle(0)
 
     # Used by ObstacleManager
     def getXPosition(self):
         return self.xPosition
-
 
 
     # Used by ObstacleManager
@@ -70,11 +73,11 @@ class LaserManager:
         return self.yPosition
 
 
-
     # Used by ObstacleManager
     def stop(self):
-        self.pwmHori.stop()
-        self.pwmVert.stop()
+        self.pi.hardware_PWM(self.HORI_PIN, self.PWM_FREQ, 0)
+        self.pi.hardware_PWM(self.VERT_PIN, self.PWM_FREQ, 0)
+        self.pi.stop()
         self.laserSwitch(False)
 
 
@@ -110,7 +113,7 @@ class LaserManager:
 
     # turns laser off if false, turns on if true
     def laserSwitch(self, laserOn):
-        GPIO.output(15, laserOn)
+        GPIO.output(self.LASER_PIN, laserOn)
 
 
 #    userInput = ''
