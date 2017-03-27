@@ -1,6 +1,7 @@
 import cv2
 import argparse
 import numpy as np
+from Properties import Properties
 
 
 def mouse_handler(event, x, y, flags, data) :
@@ -71,7 +72,7 @@ while True:
         pts_src = get_four_points(frame)
 
         # Destination image
-        size = (500,500,3)
+        size = (Properties.GRID_SIZE_X, Properties.GRID_SIZE_Y, 3)
         im_dst = np.zeros(size, np.uint8)
         pts_dst = np.array(
                            [

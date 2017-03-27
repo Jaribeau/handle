@@ -19,8 +19,8 @@ class ObstacleManager:
         self.properties = Properties()
         self.ballTracker = BallTracker.get_instance()
 
-        self.xPosition = 0.5
-        self.yPosition = 0.1
+        self.xPosition = 50
+        self.yPosition = 10
         self.keepMoving = False
 
         self.speed = 0.01
@@ -28,26 +28,29 @@ class ObstacleManager:
         self.xTarget = 0.0
         self.yTarget = 0.0
 
-        self.nextX = 0.0
-        self.nextY = 0.0
+        self.nextX = 50
+        self.nextY = 10
 
-        self.x_rate = 0.05
-        self.y_rate = 0.05
+        self.x_rate = 1
+        self.y_rate = 1
 
         self.mode = "bounce"
         self.set_mode(self.mode)
-        self.period = 0.05 # seconds between each movement
+        self.period = 0.04  # seconds between each movement
 
 
     # called by GameManager
     def collides_with(self, position, radius):
-        # TODO: Remove this magic number (500)
+
         if position[0] is None or position[1] is None:
             x = None
             y = None
         else:
-            x = float(position[0])/float(Properties.GRID_SIZE_X)# Converting cm to m
-            y = float(position[1])/float(Properties.GRID_SIZE_Y)# Converting cm to m
+            x = float(position[0])
+            y = float(position[1])
+
+        print("Ball:    " + str(x) + ", " + str(y))
+        print("Obstacle:" + str(self.xPosition) + ", " + str(self.yPosition))
 
         # Check for collision
         if x is not None and y is not None and \
@@ -112,20 +115,20 @@ class ObstacleManager:
 
             elif self.mode == "bounce":
                 if self.xPosition < 0:
-                    self.x_rate = (random.randint(1, 3) / 50.0)
-                    self.y_rate = (random.randint(-3, 3) / 50.0)
+                    self.x_rate = (random.randint(1, 3))
+                    self.y_rate = (random.randint(-3, 3))
 
-                elif self.xPosition > self.properties.PLAY_FIELD_WIDTH:
-                    self.x_rate = -(random.randint(1, 3) / 50.0)
-                    self.y_rate = (random.randint(-3, 3) / 50.0)
+                elif self.xPosition > self.properties.GRID_SIZE_X:
+                    self.x_rate = -(random.randint(1, 3))
+                    self.y_rate = (random.randint(-3, 3))
 
                 elif self.yPosition < 0:
-                    self.x_rate = (random.randint(-3, 3) / 50.0)
-                    self.y_rate = (random.randint(1, 3) / 50.0)
+                    self.x_rate = (random.randint(-3, 3))
+                    self.y_rate = (random.randint(1, 3))
 
-                elif self.yPosition > self.properties.PLAY_FIELD_LENGTH:
-                    self.x_rate = -(random.randint(-3, 3) / 50.0)
-                    self.y_rate = -(random.randint(1, 3) / 50.0)
+                elif self.yPosition > self.properties.GRID_SIZE_Y:
+                    self.x_rate = -(random.randint(-3, 3))
+                    self.y_rate = -(random.randint(1, 3))
 
                 self.nextX = self.xPosition + self.x_rate
                 self.nextY = self.yPosition + self.y_rate

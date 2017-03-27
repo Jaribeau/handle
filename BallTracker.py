@@ -96,7 +96,8 @@ class BallTracker:
 
             # Deskew the camera input to make the playing field a grid
             if self.deskew_matrix is not None:
-                frame = cv2.warpPerspective(frame_distorted, self.deskew_matrix, destination_img_size[0:2])
+                frame = cv2.warpPerspective(frame_distorted, self.deskew_matrix, destination_img_size[0:2])     # 0.02
+
             else:
                 frame = frame_distorted
 
@@ -107,12 +108,12 @@ class BallTracker:
             # resize the frame, blur it, and convert it to the HSV
             # color space
             # blurred = cv2.GaussianBlur(frame, (11, 11), 0)
-            hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+            hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)                                                        # 0.001
 
             # construct a mask for the color "orange", then perform
-            # a series of dilations and erosions to remove any small
+            # a series of dilations and erosions to remove any small                                            # 0.04
             # blobs left in the mask
-            mask_red = cv2.inRange(hsv, red_lower_threshold, red_upper_threshold)
+            mask_red = cv2.inRange(hsv, red_lower_threshold, red_upper_threshold)                               #(0.02)
             mask_yellow = cv2.inRange(hsv, yellow_lower_threshold, yellow_upper_threshold)
             mask = mask_red + mask_yellow
             mask = cv2.erode(mask, None, iterations=2)
@@ -120,7 +121,7 @@ class BallTracker:
 
             # find contours in the mask and initialize the current
             # (x, y) center of the ball
-            contours = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[-2]
+            contours = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[-2]            # 0.03
             center = None
 
             # only proceed if at least one contour was found
@@ -140,7 +141,8 @@ class BallTracker:
                     # draw the circle and centroid on the frame,
                     # then update the list of tracked points
                     # cv2.circle(img, center, radius, color[, thickness[, lineType[, shift]]]) returns: img
-                    cv2.circle(frame, center, int(Properties.BALL_RADIUS * Properties.GRID_SIZE_X), (0, 255, 255), 5)
+
+                    cv2.circle(frame, center, int(Properties.BALL_RADIUS), (0, 255, 255), 1)
                     # cv2.circle(frame, (int(x), int(y)), int(radius), (0, 255, 255), 5)
                     # cv2.circle(frame, center, int(Properties.BALL_RADIUS * Properties.GRID_SIZE_X / 5), (0, 255, 255), -1)
 
