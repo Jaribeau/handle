@@ -27,30 +27,33 @@ class GameClient():
         self.pixmap.fill(Qt.QColor("white"))
         self.game_image_label = QtWidgets.QLabel(self.window)
         self.game_image_label.setFixedHeight(500)
-        self.game_image_label.setFixedWidth(500)
-        self.game_image_label.move(50, 260)
+        self.game_image_label.setFixedWidth(800)
+        self.game_image_label.move(500, 260)
         # self.game_image = QtGui.QImage(500, 500, )
 
         self.game_message_label = QtWidgets.QLabel(self.window)
         self.game_message_label.setText(self.game_message)
-        self.game_message_label.move(80, 275)
-        self.game_message_label.setFixedWidth(500)
-        self.game_message_label.setFixedHeight(200)
+        self.game_message_label.move(530, 275)
+        self.game_message_label.setFixedWidth(600)
+        self.game_message_label.setFixedHeight(500)
         self.game_message_label.setFont(Qt.QFont("Helvetica [Cronyx]", 70, 30))  # Font family, size, weight
 
         self.game_score_label = QtWidgets.QLabel(self.window)
-        self.game_score_label.setText(("SCORE: " + str(self.game_score)))
-        self.game_score_label.move(80, 20)
-        self.game_score_label.setFixedWidth(500)
+        self.game_score_label.setText(("Score: " + str(self.game_score)))
+        self.game_score_label.move(500, 20)
+        self.game_score_label.setFixedWidth(600)
         self.game_score_label.setFont(Qt.QFont("Helvetica [Cronyx]", 70, 30))  # Font family, size, weight
 
-
         self.start_game_button = QtWidgets.QPushButton("START GAME", self.window)
-        self.start_game_button.move(50, 20)
+        self.start_game_button.setFixedWidth(500)
+        self.start_game_button.setFixedHeight(100)
+        self.start_game_button.move(500, 150)
         self.start_game_button.clicked.connect(self.start_game)
 
         self.end_game_button = QtWidgets.QPushButton("QUIT", self.window)
-        self.end_game_button.move(50, 20)
+        self.end_game_button.setFixedWidth(500)
+        self.end_game_button.setFixedHeight(100)
+        self.end_game_button.move(500, 150)
         self.end_game_button.clicked.connect(self.end_game)
         self.end_game_button.hide()
 
@@ -72,14 +75,13 @@ class GameClient():
             self.end_game_button.hide()
 
     def notify(self, *args, **keywordargs):
-        print("Updating GUI")
         if keywordargs.get('message') is not None:
             self.game_message = keywordargs.get('message')
             self.game_message_label.setText(self.game_message)
 
         if keywordargs.get('score') is not None:
             self.game_score = keywordargs.get('score')
-            self.game_score_label.setText("SCORE: " + str(self.game_score))
+            self.game_score_label.setText("Score: " + str(self.game_score))
 
         if keywordargs.get('timeRemaining') is not None:
             self.game_time_remaining = keywordargs.get('timeRemaining')

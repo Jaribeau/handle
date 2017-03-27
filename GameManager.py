@@ -23,7 +23,6 @@ class GameManager:
         self.frame = None
         self.score = 0
         self.game_up_to_date = True
-        self.lock = False
         self.message = ""
 
 
@@ -35,9 +34,7 @@ class GameManager:
         self.ballTracker.register(self)
         self.obstacle.start_movement()
         self.obstacle.set_mode("fixed")
-        self.obstacle.set_mode("bounce")
         self.start_time = time.clock()
-        print(self.start_time)
         self.gameOn = True
         # self.window = cv2.namedWindow("WebcamWindow")
 
@@ -50,10 +47,7 @@ class GameManager:
 
     def update_game(self):
         while self.gameOn:
-            self.game_up_to_date = False
-            if self.lock is False and self.game_up_to_date is False:
-                self.lock = True
-                print ("GM - up to date?" + str(self.game_up_to_date))
+            if self.game_up_to_date is False:
                 self.timeElapsed = int((time.clock() - self.start_time))
 
                 # Starting count-down
@@ -73,7 +67,6 @@ class GameManager:
 
                 # Regular gameplay
                 if self.frame is not None:
-                    print ("A")
                     cv2.putText(self.frame, "Score:" + str(self.score), (5, 10), cv2.FONT_ITALIC, 0.5, 255)
                     cv2.putText(self.frame, "o", (int(self.obstacle.xPosition * Properties.GRID_SIZE_X)-25, Properties.GRID_SIZE_Y - int(self.obstacle.yPosition * Properties.GRID_SIZE_Y)+20), cv2.FONT_HERSHEY_SIMPLEX, 3, 0)
                     self.frame = imutils.resize(self.frame, width=Properties.GRID_SIZE_X)
@@ -82,7 +75,14 @@ class GameManager:
                 if self.obstacle.collides_with([self.ballTracker.xBallPosition, self.ballTracker.yBallPosition], Properties.BALL_RADIUS):
                     print("------- Collision!!! -------- SCORE: -", self.score)
                     self.message = "GAME OVER\nSCORE: " + str(self.score)
-                    self.gameOn = False
+                    self.push_notification("update",
+                                       message=self.message,
+                                       frame=self.frame,
+                                       timeRemaining=self.timeElapsed,
+                                       gameOn=self.gameOn,
+                                       score=self.score,
+                    )
+                    self.end_game()
                 else:
                     # Check timer, increment score every ~second
                     # self.score += 1
@@ -90,7 +90,6 @@ class GameManager:
 
                 # Notify subscribers that game state has been updated
                             
-                print ("GM pinging Cliwnt")
                 self.push_notification("update",
                                        message=self.message,
                                        frame=self.frame,
@@ -98,21 +97,19 @@ class GameManager:
                                        gameOn=self.gameOn,
                                        score=self.score,
                                        )
-                cv2.waitKey(1)
                 self.game_up_to_date = True
-                self.lock = False
-
 
 
 
     def end_game(self):
         print ("Game Over.")
-        self.gameOn = False
-        self.obstacle.stop_movement()
-        self.ballTracker.unregister_all()
-        self.ballTracker.stop_ball_tracking()
-        self.unregister_all()
-        self.timeElapsed = 0
+        if self.gameOn is True:
+            self.gameOn = False
+            self.obstacle.stop_movement()
+            self.ballTracker.unregister_all()
+            self.ballTracker.stop_ball_tracking()
+            self.unregister_all()
+            self.timeElapsed = 0
 
 
 
@@ -122,16 +119,12 @@ class GameManager:
         # Store frame value for display from main thread
         if keywordargs.get('frame') is not None:
             self.frame = keywordargs.get('frame')
-            print("WTF")
-            self.game_up_to_date = False
 
         # # TODO: CHECK ARGUMENTS TO DETERMINE MESSAGE/TYPE - pass on to handlers?
         # if keywordargs.get('x') is not None and keywordargs.get('y') is not None:
         #     self.game_up_to_date = False
 
-        self.lock = True
         self.game_up_to_date = False
-        self.lock = False
 
 
     # Observer Functions
