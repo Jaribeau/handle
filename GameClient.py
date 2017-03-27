@@ -72,7 +72,7 @@ class GameClient():
             self.end_game_button.hide()
 
     def notify(self, *args, **keywordargs):
-
+        print("Updating GUI")
         if keywordargs.get('message') is not None:
             self.game_message = keywordargs.get('message')
             self.game_message_label.setText(self.game_message)

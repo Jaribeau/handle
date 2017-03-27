@@ -149,7 +149,7 @@ class BallTracker:
                 y_flipped = Properties.GRID_SIZE_Y-self.yBallPosition
             else:
                 y_flipped = self.yBallPosition
-                
+
             self.push_notification("Location Updated:",
                                    x=self.xBallPosition,
                                    y=y_flipped,    # Move origin to bottom left corner
