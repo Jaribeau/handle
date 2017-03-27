@@ -5,7 +5,7 @@ import threading
 import time
 import math
 
-# from LaserManager import LaserManager
+from LaserManager import LaserManager
 from Properties import Properties
 from BallTracker import BallTracker
 
@@ -15,12 +15,12 @@ class ObstacleManager:
 
 
     def __init__(self):
-        # self.laser = LaserManager()
+        self.laser = LaserManager()
         self.properties = Properties()
         self.ballTracker = BallTracker.get_instance()
 
-        self.xPosition = 0.0
-        self.yPosition = 0.0
+        self.xPosition = 0.5
+        self.yPosition = 0.1
         self.keepMoving = False
 
         self.speed = 0.01
@@ -34,7 +34,7 @@ class ObstacleManager:
         self.x_rate = 0.05
         self.y_rate = 0.05
 
-        self.mode = "fixed"
+        self.mode = "bounce"
         self.set_mode(self.mode)
         self.period = 0.05 # seconds between each movement
 
@@ -46,13 +46,15 @@ class ObstacleManager:
             x = None
             y = None
         else:
-            x = float(position[0])/500.0 # Converting cm to m
-            y = float(position[1])/500.0 # Converting cm to m
+            x = float(position[0])/float(Properties.GRID_SIZE_X)# Converting cm to m
+            y = float(position[1])/float(Properties.GRID_SIZE_Y)# Converting cm to m
 
         # Check for collision
         if x is not None and y is not None and \
                 ((self.xPosition - radius) <= x <= (self.xPosition + radius)) and \
                 ((self.yPosition - radius) <= y <= (self.yPosition + radius)):
+            print("Ball:    " + str(x) + ", " + str(y))
+            print("Obstacle:" + str(self.xPosition) + ", " + str(self.yPosition))
             return True
         else:
             return False
@@ -67,7 +69,7 @@ class ObstacleManager:
     def start_movement(self):
         # Start obstacle movement thread
         print("start movement.")
-        # self.laser.start()
+        self.laser.start()
         self.keepMoving = True
         t1 = threading.Thread(target=self.move_obstacle)
         t1.daemon = True
@@ -78,7 +80,7 @@ class ObstacleManager:
     # called by GameManager
     def stop_movement(self):
         self.keepMoving = False
-        # self.laser.stop()
+        self.laser.stop()
         print("Obstacle motion stopped.")
 
 
@@ -109,7 +111,6 @@ class ObstacleManager:
 
 
             elif self.mode == "bounce":
-                #print ("Bouncing...")
                 if self.xPosition < 0:
                     self.x_rate = (random.randint(1, 3) / 50.0)
                     self.y_rate = (random.randint(-3, 3) / 50.0)
@@ -130,7 +131,7 @@ class ObstacleManager:
                 self.nextY = self.yPosition + self.y_rate
 
 
-            # self.laser.setPosition(self.nextX, self.nextY)
+            self.laser.setPosition(self.nextX, self.nextY)
             self.xPosition = self.nextX
             self.yPosition = self.nextY
             time.sleep(self.period)  # wait this many seconds
@@ -151,11 +152,6 @@ class ObstacleManager:
             self.nextX = self.xTarget
             self.nextY = self.yTarget
 
-    # Only to be run on its own thread
-    #	def next_step(self):
-    #		while self.keepMoving:
-    #			if (self.xPosition == self.nextX and self.yPosition == self.nextY):
-    #                time.sleep(1)
 
 
     # Observer function called by any observable class that this class registered to

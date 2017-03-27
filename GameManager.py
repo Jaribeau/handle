@@ -6,20 +6,24 @@ from Properties import Properties
 import imutils
 import threading
 import cv2
+import time
+import calendar
 
 
 class GameManager:
 
-    def __init__(self, time=60000, difficulty="Normal"):
+    def __init__(self, difficulty="Normal"):
         self.observers = []
         self.ballTracker = BallTracker.get_instance()
         self.obstacle = ObstacleManager()
-        self.timeRemaining = time
+        self.timeElapsed = 0
+        self.start_time = 0
         self.difficulty = difficulty
         self.gameOn = False
         self.frame = None
         self.score = 0
         self.game_up_to_date = True
+        self.message = ""
 
 
 
@@ -29,7 +33,8 @@ class GameManager:
         self.ballTracker.start_ball_tracking()
         self.ballTracker.register(self)
         self.obstacle.start_movement()
-        self.timeRemaining = 60000
+        self.obstacle.set_mode("fixed")
+        self.start_time = time.clock()
         self.gameOn = True
         # self.window = cv2.namedWindow("WebcamWindow")
 
@@ -43,20 +48,47 @@ class GameManager:
     def update_game(self):
         while self.gameOn:
             if self.game_up_to_date is False:
-                self.timeRemaining -= 1
+                self.timeElapsed = int((time.clock() - self.start_time))
 
+                # Starting count-down
+                if self.timeElapsed < 6:
+                    if self.timeElapsed > 3:
+                        self.message = "GO!"
+                        self.obstacle.set_mode("bounce")
+                    elif self.timeElapsed > 2:
+                        self.message = "1"
+                    elif self.timeElapsed > 1:
+                        self.message = "2"
+                    elif self.timeElapsed > 0:
+                        self.message = "3"
+
+                elif self.timeElapsed < 7:
+                    self.message = ""
+
+                # Regular gameplay
                 if self.frame is not None:
                     cv2.putText(self.frame, "Score:" + str(self.score), (5, 10), cv2.FONT_ITALIC, 0.5, 255)
                     cv2.putText(self.frame, "o", (int(self.obstacle.xPosition * Properties.GRID_SIZE_X)-25, Properties.GRID_SIZE_Y - int(self.obstacle.yPosition * Properties.GRID_SIZE_Y)+20), cv2.FONT_HERSHEY_SIMPLEX, 3, 0)
                     self.frame = imutils.resize(self.frame, width=Properties.GRID_SIZE_X)
                     # cv2.imshow(self.window, self.frame)
-                    self.push_notification("image",
-                                           image=self.frame)
 
                 if self.obstacle.collides_with([self.ballTracker.xBallPosition, self.ballTracker.yBallPosition], Properties.BALL_RADIUS):
-                    print ("------- Collision!!! -------- SCORE: -", self.score)
-                    self.score += 1
+                    print("------- Collision!!! -------- SCORE: -", self.score)
+                    self.message = "GAME OVER\nSCORE: " + str(self.score)
+                    self.gameOn = False
+                else:
+                    # Check timer, increment score every ~second
+                    # self.score += 1
+                    self.score = self.timeElapsed * 10
 
+                # Notify subscribers that game state has been updated
+                self.push_notification("update",
+                                       message=self.message,
+                                       frame=self.frame,
+                                       timeRemaining=self.timeElapsed,
+                                       gameOn=self.gameOn,
+                                       score=self.score,
+                                       )
                 cv2.waitKey(1)
                 self.game_up_to_date = True
 
@@ -69,7 +101,7 @@ class GameManager:
         self.ballTracker.unregister_all()
         # self.ballTracker.stop_ball_tracking()
         self.unregister_all()
-        self.timeRemaining = 0
+        self.timeElapsed = 0
 
 
 
