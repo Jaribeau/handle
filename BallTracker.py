@@ -5,6 +5,7 @@ import cv2
 import threading
 import time
 import numpy as np
+from Properties import Properties
 
 
 class BallTracker:
@@ -90,7 +91,7 @@ class BallTracker:
 
             # grab the current frame
             (grabbed, frame_distorted) = camera.read() # grab the current frame
-            destination_img_size = (100, 100, 3)
+            destination_img_size = (Properties.GRID_SIZE_X, Properties.GRID_SIZE_Y, 3)
 
             # Deskew the camera input to make the playing field a grid
             if self.deskew_matrix is not None:
@@ -137,13 +138,15 @@ class BallTracker:
                 if radius > 1:
                     # draw the circle and centroid on the frame,
                     # then update the list of tracked points
-                    cv2.circle(frame, (int(x), int(y)), int(radius + 1), (0, 255, 255), 1)
-                    cv2.circle(frame, center, 2, (0, 255, 255), -1)
+                    # cv2.circle(img, center, radius, color[, thickness[, lineType[, shift]]]) returns: img
+                    cv2.circle(frame, center, int(Properties.BALL_RADIUS * Properties.GRID_SIZE_X), (0, 255, 255), 5)
+                    # cv2.circle(frame, (int(x), int(y)), int(radius), (0, 255, 255), 5)
+                    cv2.circle(frame, center, int(Properties.BALL_RADIUS * Properties.GRID_SIZE_X / 5), (0, 255, 255), -1)
 
             # send update of ball location
             self.lastUpdated = time.clock()
             if self.yBallPosition is not None:
-                y_flipped = 100-self.yBallPosition
+                y_flipped = Properties.GRID_SIZE_Y-self.yBallPosition
             else:
                 y_flipped = self.yBallPosition
                 
@@ -155,31 +158,16 @@ class BallTracker:
 
         # cleanup the camera and close any open windows
         camera.release()
-        cv2.destroyAllWindows()
+        # cv2.destroyAllWindows()
 
         print ("Ball tracking stopped.")
-
-    def read_keyboard_input(self):
-        key = raw_input('q = Exit, p = Get Ball Position \n')
-        print ("Key entered: " + key)
-
-        if key == 'q':
-            self.stop_ball_tracking()
-
-        elif key == 'p':
-            print (self.get_ball_position())
-            self.read_keyboard_input()
-
-        else:
-            self.read_keyboard_input()
-
-    # def get_ball_position(self):
-    # 	return [self.xBallPosition, self.yBallPosition, self.lastUpdated]
 
 
 
     def get_ball_radius(self):
         return self.ballRadius
+
+
 
     # Observer Functions
     def register(self, observer):

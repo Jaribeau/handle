@@ -8,6 +8,7 @@ import numpy
 import argparse
 import imutils
 import cv2
+from Properties import Properties
 from homograpy.utils import get_four_points
 
 # -------------------------------
@@ -35,7 +36,7 @@ redLowerThreshold = (0, 100, 140)
 redUpperThreshold = (20, 255, 255) 
 pts = deque(maxlen=args["buffer"])
 # Destination image
-size = (100,100,3)
+size = (Properties.GRID_SIZE_X, Properties.GRID_SIZE_Y, 3)
 
 # -------------------------------
 # ------- VIDEO FEED SETUP ------

@@ -5,19 +5,20 @@ import threading
 import time
 import math
 
-from LaserManager import LaserManager
+# from LaserManager import LaserManager
 from Properties import Properties
 from BallTracker import BallTracker
+
 
 class ObstacleManager:
 
 
 
     def __init__(self):
-        self.laser = LaserManager()
+        # self.laser = LaserManager()
         self.properties = Properties()
         self.ballTracker = BallTracker.get_instance()
-        
+
         self.xPosition = 0.0
         self.yPosition = 0.0
         self.keepMoving = False
@@ -33,25 +34,32 @@ class ObstacleManager:
         self.x_rate = 0.05
         self.y_rate = 0.05
 
-        self.mode = "bounce"
-        self.set_mode("bounce")
+        self.mode = "fixed"
+        self.set_mode(self.mode)
         self.period = 0.05 # seconds between each movement
 
 
     # called by GameManager
     def collides_with(self, position, radius):
-        x = float(position[0])/100.0 # Converting cm to m
-        y = float(position[1])/100.0 # Converting cm to m
-        #print("Obst: (", self.xPosition, ", ", self.yPosition, ")")
-        #print("Ball: (", x, ", ", y, ")")
-        #print("--")
-        #if (not (0 < x and x < self.properties.PLAY_FIELD_WIDTH and 0 < y and y < self.properties.PLAY_FIELD_LENGTH)):
-        #    return True
-        if ((self.xPosition - radius) <= x <= (self.xPosition + radius)) and (
-                (self.yPosition - radius) <= y <= (self.yPosition + radius)):
+        # TODO: Remove this magic number (500)
+        if position[0] is None or position[1] is None:
+            x = None
+            y = None
+        else:
+            x = float(position[0])/500.0 # Converting cm to m
+            y = float(position[1])/500.0 # Converting cm to m
+
+        # Check for collision
+        if x is not None and y is not None and \
+                ((self.xPosition - radius) <= x <= (self.xPosition + radius)) and \
+                ((self.yPosition - radius) <= y <= (self.yPosition + radius)):
             return True
         else:
             return False
+
+        # Check if outside of play area
+        #if (not (0 < x and x < self.properties.PLAY_FIELD_WIDTH and 0 < y and y < self.properties.PLAY_FIELD_LENGTH)):
+        #    return True
 
 
 
@@ -59,7 +67,7 @@ class ObstacleManager:
     def start_movement(self):
         # Start obstacle movement thread
         print("start movement.")
-        self.laser.start()
+        # self.laser.start()
         self.keepMoving = True
         t1 = threading.Thread(target=self.move_obstacle)
         t1.daemon = True
@@ -70,7 +78,7 @@ class ObstacleManager:
     # called by GameManager
     def stop_movement(self):
         self.keepMoving = False
-        self.laser.stop()
+        # self.laser.stop()
         print("Obstacle motion stopped.")
 
 
@@ -82,7 +90,12 @@ class ObstacleManager:
 
         while self.keepMoving:  # Random motion until stopMovement called
 
-            if self.mode == "target":
+            if self.mode == "fixed":
+                self.nextX = self.properties.PLAY_FIELD_WIDTH / 2
+                self.nextY = self.properties.PLAY_FIELD_LENGTH / 2
+
+
+            elif self.mode == "target":
                 if self.xTarget == self.xPosition and self.yTarget == self.yPosition:
                     self.xTarget = random.random() * self.properties.PLAY_FIELD_WIDTH
                     self.yTarget = random.random() * self.properties.PLAY_FIELD_LENGTH
@@ -117,14 +130,10 @@ class ObstacleManager:
                 self.nextY = self.yPosition + self.y_rate
 
 
-            self.laser.setPosition(self.nextX, self.nextY)
+            # self.laser.setPosition(self.nextX, self.nextY)
             self.xPosition = self.nextX
             self.yPosition = self.nextY
-            #print("Rate:", self.y_rate, self.y_rate)
-            #print("New position is", self.xPosition, self.yPosition)
             time.sleep(self.period)  # wait this many seconds
-            # self.xPosition = self.nextX
-        # self.yPosition = self.nextY
 
 
 
