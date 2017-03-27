@@ -55,14 +55,14 @@ class GameManager:
                 # Starting count-down
                 if self.timeElapsed < 6:
                     if self.timeElapsed > 3:
-                        self.message = "GO!"
+                        self.message = " GO!"
                         self.obstacle.set_mode("bounce")
                     elif self.timeElapsed > 2:
-                        self.message = "1"
+                        self.message = " 1"
                     elif self.timeElapsed > 1:
-                        self.message = "2"
+                        self.message = " 2"
                     elif self.timeElapsed > 0:
-                        self.message = "3"
+                        self.message = " 3"
 
                 elif self.timeElapsed < 7:
                     self.message = ""
@@ -77,7 +77,7 @@ class GameManager:
 
                 if self.obstacle.collides_with([self.ballTracker.xBallPosition, self.ballTracker.yBallPosition], Properties.BALL_RADIUS):
                     print("------- Collision!!! -------- SCORE: -", self.score)
-                    self.message = "GAME OVER\nSCORE: " + str(self.score)
+                    self.message = "GAME\nOVER"
                     self.push_notification("update",
                                        message=self.message,
                                        frame=self.frame,

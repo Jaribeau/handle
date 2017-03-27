@@ -34,7 +34,7 @@ class GameClient():
 
         self.game_message_label = QtWidgets.QLabel(self.window)
         self.game_message_label.setText(self.game_message)
-        self.game_message_label.move(530, 275)
+        self.game_message_label.move(1100, 275)
         self.game_message_label.setFixedWidth(600)
         self.game_message_label.setFixedHeight(500)
         self.game_message_label.setFont(Qt.QFont("Helvetica [Cronyx]", 70, 30))  # Font family, size, weight
@@ -48,8 +48,9 @@ class GameClient():
         self.game_latency_label = QtWidgets.QLabel(self.window)
         self.game_latency_label.setText(("Latency: " + str(self.game_latency)))
         self.game_latency_label.move(5, 50)
-        self.game_latency_label.setFixedWidth(70)
-        self.game_latency_label.setFont(Qt.QFont("Helvetica [Cronyx]", 20, -1))  # Font family, size, weight
+        self.game_latency_label.setFixedHeight(100)
+        self.game_latency_label.setFixedWidth(200)
+        self.game_latency_label.setFont(Qt.QFont("Helvetica [Cronyx]", 10, -1))  # Font family, size, weight
 
         self.start_game_button = QtWidgets.QPushButton("START GAME", self.window)
         self.start_game_button.setFixedWidth(500)
@@ -99,7 +100,7 @@ class GameClient():
 
         if keywordargs.get('latency') is not None:
             self.game_latency = keywordargs.get('latency')
-            self.game_latency_label.setText(str(self.game_latency))
+            self.game_latency_label.setText("Latency:\n" + str(round(self.game_latency, 3)))
 
         if keywordargs.get('frame') is not None:
             self.game_cv_image = keywordargs.get('frame')
