@@ -1,6 +1,6 @@
 # main
 
-mode = "LaserManager" # choices: "GameManager", "ObstacleManager", "LaserManager"
+mode = "GameManager" # choices: "GameManager", "ObstacleManager", "LaserManager"
 
 if mode == "GameManager":
     from GameManager import GameManager
@@ -19,7 +19,7 @@ elif mode == "LaserManager":
 
     while True:
         userInput = input('please enter x,y: ')
-        #userInput = userInput.split(',')
+        userInput = userInput.split(',')
         laser.setPosition(userInput[0],userInput[1])
 
 while True:

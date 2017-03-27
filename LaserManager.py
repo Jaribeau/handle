@@ -34,21 +34,21 @@ class LaserManager:
         self.pi.set_mode(self.VERT_PIN, pigpio.OUTPUT)   # Vertical Servo
         self.pi.set_mode(self.HORI_PIN, pigpio.OUTPUT)   # Horizontal Servo
 
-        self.pi.hardware_PWM(self.VERT_PIN, self.PWM_FREQ, self.DC_LOW)
-        self.pi.hardware_PWM(self.HORI_PIN, self.PWM_FREQ, (self.DC_HIGH+self.DC_LOW)/2)
+        self.pi.hardware_PWM(self.VERT_PIN, self.PWM_FREQ, int((self.DC_HIGH+self.DC_LOW)/2))
+        self.pi.hardware_PWM(self.HORI_PIN, self.PWM_FREQ, int((self.DC_HIGH+self.DC_LOW)/2))
 
 
+    # Used by ObstacleManager
     def start(self):
-        True
-        #self.laserSwitch(True)
+        self.laserSwitch(True)
 
 
 
     # Used by ObstacleManager
     # x and y in meters
     def setPosition(self, x, y):
-        self.xPosition = x
-        self.yPosition = y
+        self.xPosition = float(x) +0.07
+        self.yPosition = float(y)
 
         #print(x,y)
         
@@ -57,15 +57,15 @@ class LaserManager:
         #print("Angles: ", angles)
 
         dutyhori = ((float(angles[0] + 90.0)/180) * self.DC_DIFF) + self.DC_LOW
-        dutyvert = ((float(angles[1])/180) * self.DC_DIFF) + self.DC_LOW
+        dutyvert = ((float(angles[1] + 15.0)/180) * self.DC_DIFF) + self.DC_LOW
 
-        self.pi.hardware_PWM(self.VERT_PIN, self.PWM_FREQ, dutyvert)
-        self.pi.hardware_PWM(self.HORI_PIN, self.PWM_FREQ, dutyhori)
+        self.pi.hardware_PWM(self.VERT_PIN, self.PWM_FREQ, int(dutyvert))
+        self.pi.hardware_PWM(self.HORI_PIN, self.PWM_FREQ, int(dutyhori))
+
 
     # Used by ObstacleManager
     def getXPosition(self):
         return self.xPosition
-
 
 
     # Used by ObstacleManager
@@ -73,9 +73,10 @@ class LaserManager:
         return self.yPosition
 
 
-
     # Used by ObstacleManager
     def stop(self):
+        self.pi.hardware_PWM(self.HORI_PIN, self.PWM_FREQ, 0)
+        self.pi.hardware_PWM(self.VERT_PIN, self.PWM_FREQ, 0)
         self.pi.stop()
         self.laserSwitch(False)
 
