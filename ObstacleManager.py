@@ -4,6 +4,7 @@ import random
 import threading
 import time
 import math
+import RPi.GPIO as GPIO
 
 from LaserManager import LaserManager
 from Properties import Properties
@@ -18,6 +19,17 @@ class ObstacleManager:
         self.laser = LaserManager()
         self.properties = Properties()
         self.ballTracker = BallTracker.get_instance()
+
+        self.BUZZ_PIN = 21
+
+        self.BUZZ_FREQ = 2000 # Frequency of pulses
+        self.BUZZ_DC = 60 # affects sound frequency
+        self.BUZZ_TIME_INTERVAL = 0.5 # time in seconds between buzzes
+
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(self.BUZZ_PIN, GPIO.OUT)
+
+        self.buzzerPwm = GPIO.PWM(self.BUZZ_PIN, self.BUZZ_FREQ)
 
         self.xPosition = 50
         self.yPosition = 50
@@ -58,6 +70,9 @@ class ObstacleManager:
                 ((Properties.GRID_SIZE_Y - self.yPosition - radius) <= y <= (Properties.GRID_SIZE_Y - self.yPosition + radius)):
             print("Ball:    " + str(x) + ", " + str(y))
             print("Obstacle:" + str(self.xPosition) + ", " + str(self.yPosition))
+            t2 = threading.Thread(target=self.buzzer)
+            t2.daemon = True
+            t2.start()
             return True
         else:
             return False
@@ -87,6 +102,19 @@ class ObstacleManager:
         print("Obstacle motion stopped.")
 
 
+    # Only to be run on its own thread
+    def buzz(self):
+        self.buzzerPwm.start(self.BUZZ_DC)
+        time.sleep(self.TIME_INTERVAL) # In seconds
+        self.buzzerPwm.stop()
+        time.sleep(self.TIME_INTERVAL)
+        self.buzzerPwm.start(self.BUZZ_DC)
+        time.sleep(self.TIME_INTERVAL)
+        self.buzzerPwm.stop()
+        time.sleep(self.TIME_INTERVAL)
+        self.buzzerPwm.start(self.BUZZ_DC)
+        time.sleep(self.TIME_INTERVAL)
+        self.buzzerPwm.stop()
 
     # Only to be run on its own thread
     def move_obstacle(self):
