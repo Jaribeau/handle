@@ -89,7 +89,8 @@ class BallTracker:
         # keep looping
         while self.ballTrackingEnabled:
 
-            # grab the current frame
+            # grab the current
+            processing_start_time = time.clock()
             (grabbed, frame_distorted) = camera.read() # grab the current frame
             destination_img_size = (Properties.GRID_SIZE_X, Properties.GRID_SIZE_Y, 3)
 
@@ -144,6 +145,7 @@ class BallTracker:
                     cv2.circle(frame, center, int(Properties.BALL_RADIUS * Properties.GRID_SIZE_X / 5), (0, 255, 255), -1)
 
             # send update of ball location
+            processing_time = time.clock() - processing_start_time
             self.lastUpdated = time.clock()
             if self.yBallPosition is not None:
                 y_flipped = Properties.GRID_SIZE_Y-self.yBallPosition
@@ -154,6 +156,7 @@ class BallTracker:
                                    x=self.xBallPosition,
                                    y=y_flipped,    # Move origin to bottom left corner
                                    updated_at=self.lastUpdated,
+                                   latency=processing_time,
                                    frame=frame)
 
         # cleanup the camera and close any open windows

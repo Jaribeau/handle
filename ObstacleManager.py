@@ -5,7 +5,7 @@ import threading
 import time
 import math
 
-from LaserManager import LaserManager
+# from LaserManager import LaserManager
 from Properties import Properties
 from BallTracker import BallTracker
 
@@ -15,7 +15,7 @@ class ObstacleManager:
 
 
     def __init__(self):
-        self.laser = LaserManager()
+        # self.laser = LaserManager()
         self.properties = Properties()
         self.ballTracker = BallTracker.get_instance()
 
@@ -69,7 +69,7 @@ class ObstacleManager:
     def start_movement(self):
         # Start obstacle movement thread
         print("start movement.")
-        self.laser.start()
+        # self.laser.start()
         self.keepMoving = True
         t1 = threading.Thread(target=self.move_obstacle)
         t1.daemon = True
@@ -80,7 +80,7 @@ class ObstacleManager:
     # called by GameManager
     def stop_movement(self):
         self.keepMoving = False
-        self.laser.stop()
+        # self.laser.stop()
         print("Obstacle motion stopped.")
 
 
@@ -131,7 +131,7 @@ class ObstacleManager:
                 self.nextY = self.yPosition + self.y_rate
 
 
-            self.laser.setPosition(self.nextX, self.nextY)
+            # self.laser.setPosition(self.nextX, self.nextY)
             self.xPosition = self.nextX
             self.yPosition = self.nextY
             time.sleep(self.period)  # wait this many seconds

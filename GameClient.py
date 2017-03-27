@@ -16,6 +16,7 @@ class GameClient():
         self.game_time_remaining = 0
         self.game_is_over = True
         self.game_score = 0
+        self.game_latency = 0
 
         # Set label, size, and position
         self.window = QtWidgets.QWidget()
@@ -43,6 +44,12 @@ class GameClient():
         self.game_score_label.move(500, 20)
         self.game_score_label.setFixedWidth(600)
         self.game_score_label.setFont(Qt.QFont("Helvetica [Cronyx]", 70, 30))  # Font family, size, weight
+
+        self.game_latency_label = QtWidgets.QLabel(self.window)
+        self.game_latency_label.setText(("Latency: " + str(self.game_latency)))
+        self.game_latency_label.move(5, 50)
+        self.game_latency_label.setFixedWidth(70)
+        self.game_latency_label.setFont(Qt.QFont("Helvetica [Cronyx]", 20, -1))  # Font family, size, weight
 
         self.start_game_button = QtWidgets.QPushButton("START GAME", self.window)
         self.start_game_button.setFixedWidth(500)
@@ -89,6 +96,10 @@ class GameClient():
         if keywordargs.get('gameOn') is False:
             self.game_is_over = not keywordargs.get('gameOn')
             # Show game over screen
+
+        if keywordargs.get('latency') is not None:
+            self.game_latency = keywordargs.get('latency')
+            self.game_latency_label.setText(str(self.game_latency))
 
         if keywordargs.get('frame') is not None:
             self.game_cv_image = keywordargs.get('frame')

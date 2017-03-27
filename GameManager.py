@@ -48,13 +48,14 @@ class GameManager:
     def update_game(self):
         while self.gameOn:
             if self.game_up_to_date is False:
+                time_update_started = time.clock()
                 self.timeElapsed = int((time.clock() - self.start_time))
 
                 # Starting count-down
                 if self.timeElapsed < 6:
                     if self.timeElapsed > 3:
                         self.message = "GO!"
-                        self.obstacle.set_mode("bounce")
+                        # self.obstacle.set_mode("bounce")
                     elif self.timeElapsed > 2:
                         self.message = "1"
                     elif self.timeElapsed > 1:
@@ -89,13 +90,14 @@ class GameManager:
                     self.score = self.timeElapsed * 10
 
                 # Notify subscribers that game state has been updated
-                            
+                latency_out = self.latency_in + time.clock() - time_update_started
                 self.push_notification("update",
                                        message=self.message,
                                        frame=self.frame,
                                        timeRemaining=self.timeElapsed,
                                        gameOn=self.gameOn,
                                        score=self.score,
+                                       latency=latency_out
                                        )
                 self.game_up_to_date = True
 
@@ -119,6 +121,7 @@ class GameManager:
         # Store frame value for display from main thread
         if keywordargs.get('frame') is not None:
             self.frame = keywordargs.get('frame')
+            self.latency_in = keywordargs.get('latency')
 
         # # TODO: CHECK ARGUMENTS TO DETERMINE MESSAGE/TYPE - pass on to handlers?
         # if keywordargs.get('x') is not None and keywordargs.get('y') is not None:
