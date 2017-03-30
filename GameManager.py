@@ -7,6 +7,7 @@ import imutils
 import threading
 import cv2
 import time
+import RPi.GPIO as GPIO
 import calendar
 
 
@@ -28,6 +29,14 @@ class GameManager:
         self.latency_in = 0
         self.obstacle_x = 0
         self.obstacle_y = 0
+
+        self.BUZZ_PIN = 21
+        self.BUZZ_FREQ = 2000 # Frequency of pulses
+        self.BUZZ_DC = 60 # affects sound frequency
+        self.BUZZ_TIME_INTERVAL = 0.5 # time in seconds between buzzes
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(self.BUZZ_PIN, GPIO.OUT)
+        self.buzzerPwm = GPIO.PWM(self.BUZZ_PIN, self.BUZZ_FREQ)
 
 
 
@@ -150,10 +159,27 @@ class GameManager:
                 ((Properties.GRID_SIZE_Y - obstacle_y - radius) <= ball_y <= (Properties.GRID_SIZE_Y - obstacle_y + radius)):
             print("Ball:    " + str(obstacle_x) + ", " + str(obstacle_y))
             print("Obstacle:" + str(obstacle_x) + ", " + str(obstacle_y))
+            t2 = threading.Thread(target=self.buzzer)
+            t2.daemon = True
+            t2.start()
             return True
         else:
             return False
 
+
+    # Only to be run on its own thread
+    def buzz(self):
+        self.buzzerPwm.start(self.BUZZ_DC)
+        time.sleep(self.TIME_INTERVAL) # In seconds
+        self.buzzerPwm.stop()
+        time.sleep(self.TIME_INTERVAL)
+        self.buzzerPwm.start(self.BUZZ_DC)
+        time.sleep(self.TIME_INTERVAL)
+        self.buzzerPwm.stop()
+        time.sleep(self.TIME_INTERVAL)
+        self.buzzerPwm.start(self.BUZZ_DC)
+        time.sleep(self.TIME_INTERVAL)
+        self.buzzerPwm.stop()
 
 
     # Observer function called by any observable class that this class registered to
