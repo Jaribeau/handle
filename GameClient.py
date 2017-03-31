@@ -96,6 +96,7 @@ class GameClient():
 
         if keywordargs.get('gameOn') is False:
             self.game_is_over = not keywordargs.get('gameOn')
+
             # Show game over screen
 
         if keywordargs.get('latency') is not None:

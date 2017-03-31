@@ -74,9 +74,11 @@ class BallTracker:
         # HSV Info: http://infohost.nmt.edu/tcc/help/pubs/colortheory/web/hsv.html
         yellow_lower_threshold = (160, 100, 40)
         yellow_upper_threshold = (179, 255, 255)
-        red_lower_threshold = (0, 100, 40)
-        red_upper_threshold = (20, 255, 255)
+        red_lower_threshold = (0, 50, 40)
+        red_upper_threshold = (40, 255, 255)
 
+        index = 0
+        
         # if a video path was not supplied, grab the reference
         # to the webcam
         if not video:
@@ -93,6 +95,16 @@ class BallTracker:
             processing_start_time = time.clock()
             (grabbed, frame_distorted) = camera.read() # grab the current frame
             destination_img_size = (Properties.GRID_SIZE_X, Properties.GRID_SIZE_Y, 3)
+
+            # Grab the obstacle location the corresponds to the timing of THIS frame
+            if index < 20:
+                index += 1
+            else:
+                index = 0
+
+            self.push_notification(new_frame_being_processed=True)
+            # obstacle_x = ObstacleManager.get_instance().xPosition
+            # obstacle_y = ObstacleManager.get_instance().yPosition
 
             # Deskew the camera input to make the playing field a grid
             if self.deskew_matrix is not None:
@@ -116,6 +128,7 @@ class BallTracker:
             mask_red = cv2.inRange(hsv, red_lower_threshold, red_upper_threshold)                               #(0.02)
             mask_yellow = cv2.inRange(hsv, yellow_lower_threshold, yellow_upper_threshold)
             mask = mask_red + mask_yellow
+            # mask = mask_yellow
             mask = cv2.erode(mask, None, iterations=2)
             mask = cv2.dilate(mask, None, iterations=2)
 
@@ -159,7 +172,8 @@ class BallTracker:
                                    y=y_flipped,    # Move origin to bottom left corner
                                    updated_at=self.lastUpdated,
                                    latency=processing_time,
-                                   frame=frame)
+                                   frame=frame,
+                                   index=index)
 
         # cleanup the camera and close any open windows
         camera.release()

@@ -1,6 +1,6 @@
 # main
 
-mode = "GameManager" # choices: "GameManager", "ObstacleManager", "LaserManager"
+mode = "LaserManager" # choices: "GameManager", "ObstacleManager", "LaserManager"
 
 if mode == "GameManager":
     from GameManager import GameManager

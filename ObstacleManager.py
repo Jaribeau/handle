@@ -13,6 +13,17 @@ from BallTracker import BallTracker
 class ObstacleManager:
 
 
+    # Singleton instance
+    instance = None
+
+
+    @staticmethod
+    def get_instance():
+        if ObstacleManager.instance is None:
+            ObstacleManager.instance = ObstacleManager()
+
+        return ObstacleManager.instance
+
 
     def __init__(self):
         self.laser = LaserManager()
@@ -35,32 +46,17 @@ class ObstacleManager:
         self.y_rate = 1
 
         self.mode = "bounce"
-        self.set_mode(self.mode)
-        self.period = 0.04  # seconds between each movement
+        self.set_mode(self
+                      .mode)
+        self.period = 0.01  # seconds between each movement
 
-
-    # called by GameManager
-    def collides_with(self, position, radius):
-
-        if position[0] is None or position[1] is None:
-            x = None
-            y = None
+        # Singleton logic
+        if ObstacleManager.instance is None:
+            ObstacleManager.instance = self
         else:
-            x = float(position[0])
-            y = float(position[1])
+            print("WARNING: You are creating an instance directly in a class intended to be a singleton. "
+                  "Use BallTracker.get_instance() instead.")
 
-        print("Ball:    " + str(x) + ", " + str(y))
-        print("Obstacle:" + str(self.xPosition) + ", " + str(self.yPosition))
-
-        # Check for collision
-        if x is not None and y is not None and \
-                ((self.xPosition - radius) <= x <= (self.xPosition + radius)) and \
-                ((Properties.GRID_SIZE_Y - self.yPosition - radius) <= y <= (Properties.GRID_SIZE_Y - self.yPosition + radius)):
-            print("Ball:    " + str(x) + ", " + str(y))
-            print("Obstacle:" + str(self.xPosition) + ", " + str(self.yPosition))
-            return True
-        else:
-            return False
 
         # Check if outside of play area
         #if (not (0 < x and x < self.properties.PLAY_FIELD_WIDTH and 0 < y and y < self.properties.PLAY_FIELD_LENGTH)):

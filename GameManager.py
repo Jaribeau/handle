@@ -7,6 +7,7 @@ import imutils
 import threading
 import cv2
 import time
+import RPi.GPIO as GPIO
 import calendar
 
 
@@ -25,6 +26,18 @@ class GameManager:
         self.game_up_to_date = True
         self.message = ""
         self.average_latency = 0
+        self.latency_in = 0
+        self.obstacle_x = 0
+        self.obstacle_y = 0
+        self.queue = [None] * 2001
+
+        self.BUZZ_PIN = 21
+        self.BUZZ_FREQ = 2000 # Frequency of pulses
+        self.BUZZ_DC = 60 # affects sound frequency
+        self.BUZZ_TIME_INTERVAL = 1.0 # time in seconds between buzzes
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(self.BUZZ_PIN, GPIO.OUT)
+        self.buzzerPwm = GPIO.PWM(self.BUZZ_PIN, self.BUZZ_FREQ)
 
 
 
@@ -71,18 +84,18 @@ class GameManager:
                 if self.frame is not None:
                     # cv2.putText(self.frame, "Score:" + str(self.score), (5, 10), cv2.FONT_ITALIC, 0.5, 255)
                     # cv2.putText(self.frame, "o", (int(self.obstacle.xPosition * Properties.GRID_SIZE_X)-25, Properties.GRID_SIZE_Y - int(self.obstacle.yPosition * Properties.GRID_SIZE_Y)+20), cv2.FONT_HERSHEY_SIMPLEX, 3, 0)
-                    cv2.circle(self.frame, (int(self.obstacle.xPosition), Properties.GRID_SIZE_Y - int(self.obstacle.yPosition)), int(Properties.BALL_RADIUS), (255, 0, 255), 1)
+                    cv2.circle(self.frame, (int(self.obstacle_x), Properties.GRID_SIZE_Y - int(self.obstacle_y)), int(Properties.BALL_RADIUS), (255, 0, 255), 1)
                     self.frame = imutils.resize(self.frame, width=Properties.GRID_DISPLAY_SIZE_X)
                     # cv2.imshow(self.window, self.frame)
 
-                if self.obstacle.collides_with([self.ballTracker.xBallPosition, self.ballTracker.yBallPosition], Properties.BALL_RADIUS):
+                if self.timeElapsed > 5 and self.collides_with([self.ballTracker.xBallPosition, self.ballTracker.yBallPosition], [self.obstacle_x, self.obstacle_y], Properties.BALL_RADIUS):
                     print("------- Collision!!! -------- SCORE: -", self.score)
                     self.message = "GAME\nOVER"
                     self.push_notification("update",
                                        message=self.message,
                                        frame=self.frame,
                                        timeRemaining=self.timeElapsed,
-                                       gameOn=self.gameOn,
+                                       gameOn=False,
                                        score=self.score,
                     )
                     self.end_game()
@@ -121,13 +134,66 @@ class GameManager:
 
 
 
+    # called by GameManager
+    def collides_with(self, ball_position, obstacle_position, radius):
+
+        if ball_position[0] is None or ball_position[1] is None:
+            ball_x = None
+            ball_y = None
+        else:
+            ball_x = float(ball_position[0])
+            ball_y = float(ball_position[1])
+
+        if obstacle_position[0] is None or obstacle_position[1] is None:
+            obstacle_x = None
+            obstacle_y = None
+        else:
+            obstacle_x = float(obstacle_position[0])
+            obstacle_y = float(obstacle_position[1])
+
+        print("Ball:    " + str(ball_x) + ", " + str(ball_y))
+        print("Obstacle:" + str(obstacle_x) + ", " + str(obstacle_y))
+
+        # Check for collision
+        if obstacle_x is not None and obstacle_y is not None and \
+                ((obstacle_x - radius) <= ball_x <= (obstacle_x + radius)) and \
+                ((Properties.GRID_SIZE_Y - obstacle_y - radius) <= ball_y <= (Properties.GRID_SIZE_Y - obstacle_y + radius)):
+            print("Ball:    " + str(obstacle_x) + ", " + str(obstacle_y))
+            print("Obstacle:" + str(obstacle_x) + ", " + str(obstacle_y))
+            t2 = threading.Thread(target=self.buzz)
+            t2.daemon = True
+            t2.start()
+            return True
+        else:
+            return False
+
+
+    # Only to be run on its own thread
+    def buzz(self):
+        self.buzzerPwm.start(self.BUZZ_DC)
+        time.sleep(self.BUZZ_TIME_INTERVAL) # In seconds
+        self.buzzerPwm.stop()
+
+
     # Observer function called by any observable class that this class registered to
     def notify(self, *args, **keywordargs):
 
         # Store frame value for display from main thread
-        if keywordargs.get('frame') is not None:
+        if keywordargs.get('frame') is not None and keywordargs.get('index') is not None:
             self.frame = keywordargs.get('frame')
             self.latency_in = keywordargs.get('latency')
+            self.queue[keywordargs.get('index')] = (self.obstacle.xPosition,self.obstacle.yPosition)
+
+            self.obstacle_x =self.queue[keywordargs.get('index')][0]
+            self.obstacle_y =self.queue[keywordargs.get('index')][1]
+
+        if keywordargs.get('new_frame_being_processed') is True and keywordargs.get('index') is not None:
+            # Grab the obstacle location the corresponds to the timing of THIS frame
+            # self.obstacle_x = self.obstacle.xPosition
+            # self.obstacle_y = self.obstacle.yPosition
+            self.queue[keywordargs.get('index')] = (self.obstacle.xPosition,self.obstacle.yPosition)
+            self.obstacle_x = self.obstacle.xPosition
+            self.obstacle_y = self.obstacle.yPosition
 
         # # TODO: CHECK ARGUMENTS TO DETERMINE MESSAGE/TYPE - pass on to handlers?
         # if keywordargs.get('x') is not None and keywordargs.get('y') is not None:
