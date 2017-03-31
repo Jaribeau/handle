@@ -1,12 +1,19 @@
 # main
 
-mode = "LaserManager" # choices: "GameManager", "ObstacleManager", "LaserManager"
+mode = "GameClient" # choices: "GameManager", "ObstacleManager", "LaserManager"
 
 if mode == "GameManager":
     from GameManager import GameManager
     
     game = GameManager()
     game.start_game()
+
+elif mode == "GameClient":
+    from GameClient import GameClient
+
+    if __name__ == '__main__':
+        client = GameClient()
+
 elif mode == "ObstacleManager":
     from ObstacleManager import ObstacleManager
 
@@ -22,5 +29,5 @@ elif mode == "LaserManager":
         userInput = userInput.split(',')
         laser.setPosition(userInput[0],userInput[1])
 
-while True:
-    True
+# while True:
+#     True

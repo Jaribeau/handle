@@ -5,7 +5,11 @@ import threading
 import time
 import math
 
-from LaserManager import LaserManager
+# try:
+#     from LaserManager import LaserManager
+#     gpio_module_present = True
+# except:
+#     gpio_module_present = False
 from Properties import Properties
 from BallTracker import BallTracker
 
@@ -26,7 +30,8 @@ class ObstacleManager:
 
 
     def __init__(self):
-        self.laser = LaserManager()
+        # if gpio_module_present:
+        #     self.laser = LaserManager()
         self.properties = Properties()
         self.ballTracker = BallTracker.get_instance()
 
@@ -68,7 +73,8 @@ class ObstacleManager:
     def start_movement(self):
         # Start obstacle movement thread
         print("start movement.")
-        self.laser.start()
+        # if gpio_module_present:
+        #     self.laser.start()
         self.keepMoving = True
         t1 = threading.Thread(target=self.move_obstacle)
         t1.daemon = True
@@ -78,8 +84,9 @@ class ObstacleManager:
 
     # called by GameManager
     def stop_movement(self):
-        self.keepMoving = False
-        self.laser.stop()
+        # self.keepMoving = False
+        # if gpio_module_present:
+        #     self.laser.stop()
         print("Obstacle motion stopped.")
 
 
@@ -130,7 +137,8 @@ class ObstacleManager:
                 self.nextY = self.yPosition + self.y_rate
 
 
-            self.laser.setPosition(self.nextX / float(Properties.GRID_SIZE_X), self.nextY / float(Properties.GRID_SIZE_Y))
+            # if gpio_module_present:
+            #     self.laser.setPosition(self.nextX / float(Properties.GRID_SIZE_X), self.nextY / float(Properties.GRID_SIZE_Y))
             self.xPosition = self.nextX
             self.yPosition = self.nextY
             time.sleep(self.period)  # wait this many seconds

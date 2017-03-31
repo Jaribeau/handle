@@ -2,8 +2,13 @@
 # UML: https://www.lucidchart.com/documents/edit/e6432d38-782d-40ea-b279-736218c36351/0
 
 
-import RPi.GPIO as GPIO
-import pigpio
+try:
+    import RPi.GPIO as GPIO
+    import pigpio
+    gpio_module_present = True
+except ImportError:
+    gpio_module_present = False
+    print ("GPIO Module not present.")
 import time
 import sys
 import math
@@ -13,29 +18,30 @@ from Properties import Properties
 
 class LaserManager:
     def __init__(self):
-        self.DC_LOW = 125000 # Empirically determined duty cycle that gives 0 degrees
-        self.DC_HIGH = 475000 # Empirically determined duty cycle that gives 180 degrees
-        self.DC_DIFF = self.DC_HIGH - self.DC_LOW  # Difference between high and low dc
-        self.PWM_FREQ = 200  # PWM Frequency
+        if gpio_module_present:
+            self.DC_LOW = 125000 # Empirically determined duty cycle that gives 0 degrees
+            self.DC_HIGH = 475000 # Empirically determined duty cycle that gives 180 degrees
+            self.DC_DIFF = self.DC_HIGH - self.DC_LOW  # Difference between high and low dc
+            self.PWM_FREQ = 200  # PWM Frequency
 
-        self.HORI_PIN = 19
-        self.VERT_PIN = 18
-        self.LASER_PIN = 26
-        
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setup(self.LASER_PIN, GPIO.OUT)  # laser
+            self.HORI_PIN = 19
+            self.VERT_PIN = 18
+            self.LASER_PIN = 26
+
+            GPIO.setmode(GPIO.BCM)
+            GPIO.setup(self.LASER_PIN, GPIO.OUT)  # laser
+
+            self.pi = pigpio.pi()
+            self.pi.set_mode(self.VERT_PIN, pigpio.OUTPUT)   # Vertical Servo
+            self.pi.set_mode(self.HORI_PIN, pigpio.OUTPUT)   # Horizontal Servo
+
+            self.pi.hardware_PWM(self.VERT_PIN, self.PWM_FREQ, int((self.DC_HIGH+self.DC_LOW)/2))
+            self.pi.hardware_PWM(self.HORI_PIN, self.PWM_FREQ, int((self.DC_HIGH+self.DC_LOW)/2))
 
         self.xPosition = 0
         self.yPosition = 0
 
         self.properties = Properties()
-
-        self.pi = pigpio.pi()
-        self.pi.set_mode(self.VERT_PIN, pigpio.OUTPUT)   # Vertical Servo
-        self.pi.set_mode(self.HORI_PIN, pigpio.OUTPUT)   # Horizontal Servo
-
-        self.pi.hardware_PWM(self.VERT_PIN, self.PWM_FREQ, int((self.DC_HIGH+self.DC_LOW)/2))
-        self.pi.hardware_PWM(self.HORI_PIN, self.PWM_FREQ, int((self.DC_HIGH+self.DC_LOW)/2))
 
 
     # Used by ObstacleManager
@@ -56,11 +62,11 @@ class LaserManager:
 
         #print("Angles: ", angles)
 
-        dutyhori = ((float(angles[0] + 90.0)/180) * self.DC_DIFF) + self.DC_LOW
-        dutyvert = ((float(angles[1] + 15.0)/180) * self.DC_DIFF) + self.DC_LOW
-
-        self.pi.hardware_PWM(self.VERT_PIN, self.PWM_FREQ, int(dutyvert))
-        self.pi.hardware_PWM(self.HORI_PIN, self.PWM_FREQ, int(dutyhori))
+        if gpio_module_present:
+            dutyhori = ((float(angles[0] + 90.0)/180) * self.DC_DIFF) + self.DC_LOW
+            dutyvert = ((float(angles[1] + 15.0)/180) * self.DC_DIFF) + self.DC_LOW
+            self.pi.hardware_PWM(self.VERT_PIN, self.PWM_FREQ, int(dutyvert))
+            self.pi.hardware_PWM(self.HORI_PIN, self.PWM_FREQ, int(dutyhori))
 
 
     # Used by ObstacleManager
@@ -75,10 +81,11 @@ class LaserManager:
 
     # Used by ObstacleManager
     def stop(self):
-        self.pi.hardware_PWM(self.HORI_PIN, self.PWM_FREQ, 0)
-        self.pi.hardware_PWM(self.VERT_PIN, self.PWM_FREQ, 0)
-        self.pi.stop()
-        self.laserSwitch(False)
+        if gpio_module_present:
+            self.pi.hardware_PWM(self.HORI_PIN, self.PWM_FREQ, 0)
+            self.pi.hardware_PWM(self.VERT_PIN, self.PWM_FREQ, 0)
+            self.pi.stop()
+            self.laserSwitch(False)
 
 
 
@@ -113,14 +120,16 @@ class LaserManager:
 
     # turns laser off if false, turns on if true
     def laserSwitch(self, laserOn):
-        GPIO.output(self.LASER_PIN, laserOn)
+
+        if gpio_module_present:
+            GPIO.output(self.LASER_PIN, laserOn)
 
 
-#    userInput = ''
- #   while (userInput != 'stop'):
-  #      userInput = input('Please enter an x and y ("x,y"):')
-  #      position = userInput.split(',')#
-
-#        setPosition(position[0], position[1])
-
- #   stop()
+    # userInput = ''
+    # while (userInput != 'stop'):
+    #    userInput = input('Please enter an x and y ("x,y"):')
+    #    position = userInput.split(',')#
+    #
+    #    setPosition(position[0], position[1])
+    #
+    # stop()

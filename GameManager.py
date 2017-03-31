@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # GameManager
 
 from BallTracker import BallTracker
@@ -8,7 +7,10 @@ import imutils
 import threading
 import cv2
 import time
-import RPi.GPIO as GPIO
+try:
+    import RPi.GPIO as GPIO
+except:
+    gpio_module_present = False
 import calendar
 
 
@@ -32,13 +34,15 @@ class GameManager:
         self.obstacle_y = 0
         self.queue = [None] * 2001
 
-        self.BUZZ_PIN = 21
-        self.BUZZ_FREQ = 2000 # Frequency of pulses
-        self.BUZZ_DC = 60 # affects sound frequency
-        self.BUZZ_TIME_INTERVAL = 1.0 # time in seconds between buzzes
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setup(self.BUZZ_PIN, GPIO.OUT)
-        self.buzzerPwm = GPIO.PWM(self.BUZZ_PIN, self.BUZZ_FREQ)
+
+        if gpio_module_present:
+            self.BUZZ_PIN = 21
+            self.BUZZ_FREQ = 2000 # Frequency of pulses
+            self.BUZZ_DC = 60 # affects sound frequency
+            self.BUZZ_TIME_INTERVAL = 1.0 # time in seconds between buzzes
+            GPIO.setmode(GPIO.BCM)
+            GPIO.setup(self.BUZZ_PIN, GPIO.OUT)
+            self.buzzerPwm = GPIO.PWM(self.BUZZ_PIN, self.BUZZ_FREQ)
 
 
 
@@ -152,8 +156,8 @@ class GameManager:
             obstacle_x = float(obstacle_position[0])
             obstacle_y = float(obstacle_position[1])
 
-        print("Ball:    " + str(ball_x) + ", " + str(ball_y))
-        print("Obstacle:" + str(obstacle_x) + ", " + str(obstacle_y))
+        # print("Ball:    " + str(ball_x) + ", " + str(ball_y))
+        # print("Obstacle:" + str(obstacle_x) + ", " + str(obstacle_y))
 
         # Check for collision
         if obstacle_x is not None and obstacle_y is not None and \
@@ -171,9 +175,10 @@ class GameManager:
 
     # Only to be run on its own thread
     def buzz(self):
-        self.buzzerPwm.start(self.BUZZ_DC)
-        time.sleep(self.BUZZ_TIME_INTERVAL) # In seconds
-        self.buzzerPwm.stop()
+        if gpio_module_present:
+            self.buzzerPwm.start(self.BUZZ_DC)
+            time.sleep(self.BUZZ_TIME_INTERVAL) # In seconds
+            self.buzzerPwm.stop()
 
 
     # Observer function called by any observable class that this class registered to
