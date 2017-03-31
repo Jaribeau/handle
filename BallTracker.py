@@ -211,3 +211,4 @@ class BallTracker:
             camera = cv2.VideoCapture(0)
         else:
             camera = cv2.VideoCapture(path)
+

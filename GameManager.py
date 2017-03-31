@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # GameManager
 
 from BallTracker import BallTracker
@@ -218,3 +219,4 @@ class GameManager:
     def push_notification(self, *args, **keywordargs):
         for observer in self.observers:
             observer.notify(*args, **keywordargs)
+
