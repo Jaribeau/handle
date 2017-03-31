@@ -6,8 +6,8 @@ import getpass
 
 class SocialManager:
     def __init__(self):
-        self.fb_appID = "176822652836044"
-        self.fb_app_secret = "df1bc055798004d38389d28022403f4f"
+        self.fb_appID = "176920796159563"
+        self.fb_app_secret = "ffc0d23e13dc6617f76140bbcf531cf6"
         self.fb_userToken = "EAACg0btpGMwBAArWP09Y5J7kIkZB2adkMx0V1fmEmXmnaEaGZBlD9ZBBxe5lM5ghupkaq9q4VaDFDuuJ6bnx1GqBk4ifpjZCaMlmdAcbmyb7bHpke8IHo0f6LwGSnCZA3A65pjLch1Q17V9v1lIh02qPDhZAbRDZAoZD"
 
         self.tw_consumer_key = "HCkDa7pZd82ec73DBN0VMyoVV"
