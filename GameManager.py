@@ -11,7 +11,6 @@ try:
     import RPi.GPIO as GPIO
 except:
     gpio_module_present = False
-import calendar
 
 
 class GameManager:
@@ -32,8 +31,6 @@ class GameManager:
         self.latency_in = 0
         self.obstacle_x = 0
         self.obstacle_y = 0
-        self.queue = [None] * 2001
-
 
         if gpio_module_present:
             self.BUZZ_PIN = 21
@@ -89,7 +86,7 @@ class GameManager:
                 if self.frame is not None:
                     # cv2.putText(self.frame, "Score:" + str(self.score), (5, 10), cv2.FONT_ITALIC, 0.5, 255)
                     # cv2.putText(self.frame, "o", (int(self.obstacle.xPosition * Properties.GRID_SIZE_X)-25, Properties.GRID_SIZE_Y - int(self.obstacle.yPosition * Properties.GRID_SIZE_Y)+20), cv2.FONT_HERSHEY_SIMPLEX, 3, 0)
-                    cv2.circle(self.frame, (int(self.obstacle_x), Properties.GRID_SIZE_Y - int(self.obstacle_y)), int(Properties.BALL_RADIUS), (255, 0, 255), 1)
+                    cv2.circle(self.frame, (int(self.obstacle.xPosition), Properties.GRID_SIZE_Y - int(self.obstacle.yPosition)), int(Properties.BALL_RADIUS), (255, 0, 255), 1)
                     self.frame = imutils.resize(self.frame, width=Properties.GRID_DISPLAY_SIZE_X)
                     # cv2.imshow(self.window, self.frame)
 
@@ -100,7 +97,7 @@ class GameManager:
                                        message=self.message,
                                        frame=self.frame,
                                        timeRemaining=self.timeElapsed,
-                                       gameOn=False,
+                                       gameOn=self.gameOn,
                                        score=self.score,
                     )
                     self.end_game()
@@ -165,7 +162,7 @@ class GameManager:
                 ((Properties.GRID_SIZE_Y - obstacle_y - radius) <= ball_y <= (Properties.GRID_SIZE_Y - obstacle_y + radius)):
             print("Ball:    " + str(obstacle_x) + ", " + str(obstacle_y))
             print("Obstacle:" + str(obstacle_x) + ", " + str(obstacle_y))
-            t2 = threading.Thread(target=self.buzz)
+            t2 = threading.Thread(target=self.buzzer)
             t2.daemon = True
             t2.start()
             return True
@@ -185,19 +182,12 @@ class GameManager:
     def notify(self, *args, **keywordargs):
 
         # Store frame value for display from main thread
-        if keywordargs.get('frame') is not None and keywordargs.get('index') is not None:
+        if keywordargs.get('frame') is not None:
             self.frame = keywordargs.get('frame')
             self.latency_in = keywordargs.get('latency')
-            self.queue[keywordargs.get('index')] = (self.obstacle.xPosition,self.obstacle.yPosition)
 
-            self.obstacle_x =self.queue[keywordargs.get('index')][0]
-            self.obstacle_y =self.queue[keywordargs.get('index')][1]
-
-        if keywordargs.get('new_frame_being_processed') is True and keywordargs.get('index') is not None:
+        if keywordargs.get('new_frame_being_processed') is True:
             # Grab the obstacle location the corresponds to the timing of THIS frame
-            # self.obstacle_x = self.obstacle.xPosition
-            # self.obstacle_y = self.obstacle.yPosition
-            self.queue[keywordargs.get('index')] = (self.obstacle.xPosition,self.obstacle.yPosition)
             self.obstacle_x = self.obstacle.xPosition
             self.obstacle_y = self.obstacle.yPosition
 
@@ -224,4 +214,3 @@ class GameManager:
     def push_notification(self, *args, **keywordargs):
         for observer in self.observers:
             observer.notify(*args, **keywordargs)
-
