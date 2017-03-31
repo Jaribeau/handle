@@ -77,6 +77,8 @@ class BallTracker:
         red_lower_threshold = (0, 50, 40)
         red_upper_threshold = (40, 255, 255)
 
+        index = 0
+        
         # if a video path was not supplied, grab the reference
         # to the webcam
         if not video:
@@ -95,6 +97,11 @@ class BallTracker:
             destination_img_size = (Properties.GRID_SIZE_X, Properties.GRID_SIZE_Y, 3)
 
             # Grab the obstacle location the corresponds to the timing of THIS frame
+            if index < 20:
+                index += 1
+            else:
+                index = 0
+
             self.push_notification(new_frame_being_processed=True)
             # obstacle_x = ObstacleManager.get_instance().xPosition
             # obstacle_y = ObstacleManager.get_instance().yPosition
@@ -165,7 +172,8 @@ class BallTracker:
                                    y=y_flipped,    # Move origin to bottom left corner
                                    updated_at=self.lastUpdated,
                                    latency=processing_time,
-                                   frame=frame)
+                                   frame=frame,
+                                   index=index)
 
         # cleanup the camera and close any open windows
         camera.release()
@@ -203,3 +211,4 @@ class BallTracker:
             camera = cv2.VideoCapture(0)
         else:
             camera = cv2.VideoCapture(path)
+

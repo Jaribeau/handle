@@ -46,8 +46,9 @@ class ObstacleManager:
         self.y_rate = 1
 
         self.mode = "bounce"
-        self.set_mode(self.mode)
-        self.period = 0.04  # seconds between each movement
+        self.set_mode(self
+                      .mode)
+        self.period = 0.01  # seconds between each movement
 
         # Singleton logic
         if ObstacleManager.instance is None:
@@ -171,3 +172,4 @@ class ObstacleManager:
 
     def set_speed(self, newSpeed):
         self.speed = newSpeed
+
