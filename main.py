@@ -1,6 +1,6 @@
 # main
 
-mode = "SocialManager" # choices: "GameManager", "GameClient", "ObstacleManager", "LaserManager", "SocialManager"
+mode = "LaserManagerTests" # choices: "GameManager", "GameClient", "ObstacleManager", "LaserManager", "SocialManager"
 
 if mode == "GameManager":
     from GameManager import GameManager
@@ -32,7 +32,16 @@ elif mode == "SocialManager":
     from SocialManager import SocialManager
 
     social = SocialManager()
-    social.post(500)
+    social.post(4242)
+elif mode == "LaserManagerTests":
+    from LaserManager import LaserManager
+    laser = LaserManager()
+
+    while True:
+        userInput = input('please enter x,y: ')
+        userInput = userInput.split(',')
+        angles = LaserManager.toPolarCoords(userInput[0],userInput[1])
+        print (angles)
 
 # while True:
 #     True
