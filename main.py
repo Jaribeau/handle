@@ -1,6 +1,6 @@
 # main
 
-mode = "GameClient" # choices: "GameManager", "ObstacleManager", "LaserManager"
+mode = "SocialManager" # choices: "GameManager", "GameClient", "ObstacleManager", "LaserManager", "SocialManager"
 
 if mode == "GameManager":
     from GameManager import GameManager
@@ -28,6 +28,11 @@ elif mode == "LaserManager":
         userInput = input('please enter x,y: ')
         userInput = userInput.split(',')
         laser.setPosition(userInput[0],userInput[1])
+elif mode == "SocialManager":
+    from SocialManager import SocialManager
+
+    social = SocialManager()
+    social.post(500)
 
 # while True:
 #     True
