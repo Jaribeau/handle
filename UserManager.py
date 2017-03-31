@@ -54,15 +54,31 @@ def score_list():
     db.close()
     return scores
 
-
-def save_score(player_id, score):
+def highscores():
     db = MySQLdb.connect(DB_HOST,
                          DB_USER,
                          DB_PASSWORD,
                          DB_NAME)
     cursor = db.cursor()
-    cursor.execute('INSERT INTO scores (player_id, score) VALUES (%(player_id)s, %(score)s)',
-                   {'player_id': player_id, 'score': score})
+    cursor.execute('SELECT * FROM scores ORDER BY score DESC LIMIT 10')
+    highscores_raw = cursor.fetchall()
+    highscores = []
+
+    for highscore in highscores_raw:
+        highscores.append([highscore[2], highscore[3]])
+
+    return highscores
+
+
+
+def save_score(player_id, player_name, score):
+    db = MySQLdb.connect(DB_HOST,
+                         DB_USER,
+                         DB_PASSWORD,
+                         DB_NAME)
+    cursor = db.cursor()
+    cursor.execute('INSERT INTO scores (player_id, player_name, score) VALUES (%(player_id)s, %(player_name)s, %(score)s)',
+                   {'player_id': player_id, 'player_name': player_name, 'score': score})
     db.commit()
     db.close()
 
@@ -132,6 +148,7 @@ def setup_tables():
         sql = """CREATE TABLE scores (
             record_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
             player_id INT NOT NULL,
+            player_name CHAR(30),
             score INT NOT NULL,
             FOREIGN KEY fk_player(player_id)
             REFERENCES players(player_id)
@@ -164,33 +181,33 @@ def seed():
     cursor.execute("""INSERT INTO players (player_id, player_name) VALUES (14, 'Jack')""")
 
     # -- SCORE DATA --
-    cursor.execute("""INSERT INTO scores (record_id, player_id, score) VALUES (201, 11, 200)""")
-    cursor.execute("""INSERT INTO scores (record_id, player_id, score) VALUES (202, 11, 400)""")
-    cursor.execute("""INSERT INTO scores (record_id, player_id, score) VALUES (203, 11, 300)""")
-    cursor.execute("""INSERT INTO scores (record_id, player_id, score) VALUES (204, 11, 500)""")
-    cursor.execute("""INSERT INTO scores (record_id, player_id, score) VALUES (205, 12, 122)""")
-    cursor.execute("""INSERT INTO scores (record_id, player_id, score) VALUES (206, 12, 322)""")
-    cursor.execute("""INSERT INTO scores (record_id, player_id, score) VALUES (207, 12, 222)""")
-    cursor.execute("""INSERT INTO scores (record_id, player_id, score) VALUES (208, 13, 1201)""")
-    cursor.execute("""INSERT INTO scores (record_id, player_id, score) VALUES (209, 13, 101)""")
-    cursor.execute("""INSERT INTO scores (record_id, player_id, score) VALUES (210, 13, 1)""")
-    cursor.execute("""INSERT INTO scores (record_id, player_id, score) VALUES (211, 13, 301)""")
-    cursor.execute("""INSERT INTO scores (record_id, player_id, score) VALUES (212, 13, 11)""")
+    cursor.execute("""INSERT INTO scores (record_id, player_id, player_name, score) VALUES (201, 11, 'Jared', 200)""")
+    cursor.execute("""INSERT INTO scores (record_id, player_id, player_name, score) VALUES (202, 11, 'Jared', 400)""")
+    cursor.execute("""INSERT INTO scores (record_id, player_id, player_name, score) VALUES (203, 11, 'Jared', 300)""")
+    cursor.execute("""INSERT INTO scores (record_id, player_id, player_name, score) VALUES (204, 11, 'Jared', 500)""")
+    cursor.execute("""INSERT INTO scores (record_id, player_id, player_name, score) VALUES (205, 12, 'River', 122)""")
+    cursor.execute("""INSERT INTO scores (record_id, player_id, player_name, score) VALUES (206, 12, 'River', 322)""")
+    cursor.execute("""INSERT INTO scores (record_id, player_id, player_name, score) VALUES (207, 12, 'River', 222)""")
+    cursor.execute("""INSERT INTO scores (record_id, player_id, player_name, score) VALUES (208, 13, 'Igor', 1201)""")
+    cursor.execute("""INSERT INTO scores (record_id, player_id, player_name, score) VALUES (209, 13, 'Igor', 101)""")
+    cursor.execute("""INSERT INTO scores (record_id, player_id, player_name, score) VALUES (210, 13, 'Igor', 1)""")
+    cursor.execute("""INSERT INTO scores (record_id, player_id, player_name, score) VALUES (211, 13, 'Igor', 301)""")
+    cursor.execute("""INSERT INTO scores (record_id, player_id, player_name, score) VALUES (212, 13, 'Igor', 110000)""")
 
     db.commit()
     db.close()
 
 
-    save_score(create_player("New Guy"), 1000000)
+    # save_score(create_player("New Guy"), 1000000)
     print("Database seeded successfully!")
 
 
 # --------------------------------
 # Main Program
 reset_database()
-print(player_list())
-print("-" * 40)
-print(score_list())
+# print(player_list())
+# print("-" * 40)
+# print(score_list())
 
 
 # MySQL DataBase Setup

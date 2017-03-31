@@ -162,15 +162,17 @@ class GameManager:
                 ((Properties.GRID_SIZE_Y - obstacle_y - radius) <= ball_y <= (Properties.GRID_SIZE_Y - obstacle_y + radius)):
             print("Ball:    " + str(obstacle_x) + ", " + str(obstacle_y))
             print("Obstacle:" + str(obstacle_x) + ", " + str(obstacle_y))
-            t2 = threading.Thread(target=self.buzzer)
-            t2.daemon = True
-            t2.start()
-            return True
+
+            if gpio_module_present:
+                t2 = threading.Thread(target=self.buzzer)
+                t2.daemon = True
+                t2.start()
+                return True
         else:
             return False
 
 
-    # Only to be run on its own thread
+    # Note: Run asynchronously
     def buzz(self):
         if gpio_module_present:
             self.buzzerPwm.start(self.BUZZ_DC)

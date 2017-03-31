@@ -1,6 +1,6 @@
 # main
 
-mode = "SocialManager" # choices: "GameManager", "GameClient", "ObstacleManager", "LaserManager", "SocialManager"
+mode = "GameClient" # choices: "GameManager", "GameClient", "ObstacleManager", "LaserManager", "SocialManager"
 
 if mode == "GameManager":
     from GameManager import GameManager
