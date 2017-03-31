@@ -65,7 +65,7 @@ class BallTracker:
     # Only to be run on its own thread
     def track_ball(self, video=""):
 
-        print ('Started real camera ball tracking!!!!')
+        print ('Started camera ball tracking')
         print (cv2.__version__)
         # define the lower and upper boundaries of the "green"
         # ball in the HSV color space, then initialize the
@@ -76,8 +76,7 @@ class BallTracker:
         yellow_upper_threshold = (179, 255, 255)
         red_lower_threshold = (0, 50, 40)
         red_upper_threshold = (40, 255, 255)
-
-        index = 0
+        index = 0   # Index in the round queue
         
         # if a video path was not supplied, grab the reference
         # to the webcam
@@ -91,7 +90,7 @@ class BallTracker:
         # keep looping
         while self.ballTrackingEnabled:
 
-            # grab the current
+            # grab the current frame and track the processing time
             processing_start_time = time.clock()
             (grabbed, frame_distorted) = camera.read() # grab the current frame
             destination_img_size = (Properties.GRID_SIZE_X, Properties.GRID_SIZE_Y, 3)
@@ -102,30 +101,29 @@ class BallTracker:
             else:
                 index = 0
 
+            # Before beginning the processing (i.e. introducing lag), notify subscribers that a new frame has been grabbed
             self.push_notification(new_frame_being_processed=True)
-            # obstacle_x = ObstacleManager.get_instance().xPosition
-            # obstacle_y = ObstacleManager.get_instance().yPosition
 
             # Deskew the camera input to make the playing field a grid
             if self.deskew_matrix is not None:
-                frame = cv2.warpPerspective(frame_distorted, self.deskew_matrix, destination_img_size[0:2])     # 0.02
+                frame = cv2.warpPerspective(frame_distorted, self.deskew_matrix, destination_img_size[0:2])  # Pi Processing time test:  0.02
 
             else:
                 frame = frame_distorted
 
-            # check for end of video
+            # End of video
             if video and not grabbed:
                 break
 
             # resize the frame, blur it, and convert it to the HSV
             # color space
             # blurred = cv2.GaussianBlur(frame, (11, 11), 0)
-            hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)                                                        # 0.001
+            hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)                                      # Pi Processing time test: 0.001
 
             # construct a mask for the color "orange", then perform
-            # a series of dilations and erosions to remove any small                                            # 0.04
+            # a series of dilations and erosions to remove any small                           # Pi Processing time test: 0.04
             # blobs left in the mask
-            mask_red = cv2.inRange(hsv, red_lower_threshold, red_upper_threshold)                               #(0.02)
+            mask_red = cv2.inRange(hsv, red_lower_threshold, red_upper_threshold)              # Pi Processing time test: (0.02)
             mask_yellow = cv2.inRange(hsv, yellow_lower_threshold, yellow_upper_threshold)
             mask = mask_red + mask_yellow
             # mask = mask_yellow
@@ -175,10 +173,7 @@ class BallTracker:
                                    frame=frame,
                                    index=index)
 
-        # cleanup the camera and close any open windows
         camera.release()
-        # cv2.destroyAllWindows()
-
         print ("Ball tracking stopped.")
 
 

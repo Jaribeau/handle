@@ -78,6 +78,15 @@ class GameClient():
         self.start_game_button.move(500, 150)
         self.start_game_button.clicked.connect(self.start_game)
 
+        self.highscores_table = QtWidgets.QListWidget(self.window)
+        self.highscores_table.move(5, 230)
+
+        self.highscores_label = QtWidgets.QLabel(self.window)
+        self.highscores_label.move(5, 200)
+        self.highscores_label.setText("HIGHSCORES")
+        self.highscores_label.setFixedWidth(300)
+        self.highscores_label.setFont(Qt.QFont("Helvetica [Cronyx]", 30))  # Font family, size, weight
+
 
 
         # -- SELECT/CREATE PLAYER VIEW --
@@ -140,6 +149,8 @@ class GameClient():
         self.new_player_label.hide()
         self.existing_player_label.hide()
         self.select_player_button.hide()
+        self.highscores_table.hide()
+        self.highscores_label.hide()
 
     def show_select_player_view(self):
         self.view_label.setText("SELECT PLAYER")
@@ -172,12 +183,19 @@ class GameClient():
         self.view_label.setText("Welcome, " + str(self.current_player['name']))
         self.hide_all_elements()
         self.start_game_button.show()
+        self.highscores_table.show()
+        self.highscores_label.show()
+        self.show_highscores()
 
         # for player in UserManager.player_list():
         #     self.select_player_dropdown.addItem(player[1], player[0])
 
     def show_highscores(self):
-        print("MY SCORES!")
+        print("HIGH SCORES:")
+        i = 1
+        for record in UserManager.highscores():
+            self.highscores_table.addItem((str(i) + ".  " + str(record[0]) + "  -  " + str(record[1])))
+            i += 1
 
     def show_current_player_scores(self):
         print("MY SCORES!")
