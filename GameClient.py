@@ -3,12 +3,14 @@
 import sys
 from PyQt5 import QtGui, QtWidgets, Qt
 from GameManager import GameManager
+import UserManager
 import cv2
 
 
 class GameClient():
     def __init__(self):
         self.app = QtWidgets.QApplication(sys.argv)
+        self.current_player = {'name': None, 'id': None}
 
         self.game = None
         self.game_cv_image = None
@@ -23,14 +25,22 @@ class GameClient():
         self.window.setGeometry(10, 200, 600, 800)
         self.window.setWindowTitle("Handle")
 
-        # Create UI elements
+        # -- SHARED --
+        self.view_label = QtWidgets.QLabel(self.window)
+        self.view_label.setText("HANDLE")
+        self.view_label.move(500, 20)
+        self.view_label.setFixedWidth(600)
+        self.view_label.setFont(Qt.QFont("Helvetica [Cronyx]", 70, 30))  # Font family, size, weight
+
+
+
+        # -- IN GAME VIEW --
         self.pixmap = QtGui.QPixmap(500, 500)
         self.pixmap.fill(Qt.QColor("white"))
         self.game_image_label = QtWidgets.QLabel(self.window)
         self.game_image_label.setFixedHeight(500)
         self.game_image_label.setFixedWidth(800)
         self.game_image_label.move(500, 260)
-        # self.game_image = QtGui.QImage(500, 500, )
 
         self.game_message_label = QtWidgets.QLabel(self.window)
         self.game_message_label.setText(self.game_message)
@@ -52,12 +62,6 @@ class GameClient():
         self.game_latency_label.setFixedWidth(200)
         self.game_latency_label.setFont(Qt.QFont("Helvetica [Cronyx]", 10, -1))  # Font family, size, weight
 
-        self.start_game_button = QtWidgets.QPushButton("START GAME", self.window)
-        self.start_game_button.setFixedWidth(500)
-        self.start_game_button.setFixedHeight(100)
-        self.start_game_button.move(500, 150)
-        self.start_game_button.clicked.connect(self.start_game)
-
         self.end_game_button = QtWidgets.QPushButton("QUIT", self.window)
         self.end_game_button.setFixedWidth(500)
         self.end_game_button.setFixedHeight(100)
@@ -65,8 +69,130 @@ class GameClient():
         self.end_game_button.clicked.connect(self.end_game)
         self.end_game_button.hide()
 
-        self.window.show()
+
+
+        # -- MENU VIEW --
+        self.start_game_button = QtWidgets.QPushButton("START GAME", self.window)
+        self.start_game_button.setFixedWidth(500)
+        self.start_game_button.setFixedHeight(100)
+        self.start_game_button.move(500, 150)
+        self.start_game_button.clicked.connect(self.start_game)
+
+
+
+        # -- SELECT/CREATE PLAYER VIEW --
+
+        self.existing_player_label = QtWidgets.QLabel(self.window)
+        self.existing_player_label.move(5, 200)
+        self.existing_player_label.setText("EXISTING PLAYER:")
+        self.existing_player_label.setFixedWidth(300)
+        self.existing_player_label.setFont(Qt.QFont("Helvetica [Cronyx]", 30))  # Font family, size, weight
+
+        self.select_player_dropdown = QtWidgets.QComboBox(self.window)
+        self.select_player_dropdown.setFont(Qt.QFont("Helvetica [Cronyx]",20))
+        self.select_player_dropdown.setFixedWidth(200)
+        self.select_player_dropdown.setFixedHeight(50)
+        # self.select_player_dropdown.currentIndexChanged.connect(self.select_player)
+        self.select_player_dropdown.move(5, 250)
+
+        self.select_player_button = QtWidgets.QPushButton("SELECT", self.window)
+        self.select_player_button.setFixedWidth(75)
+        self.select_player_button.setFixedHeight(63)
+        self.select_player_button.clicked.connect(self.select_player)
+        self.select_player_button.move(205, 246)
+
+        self.new_player_label = QtWidgets.QLabel(self.window)
+        self.new_player_label.setText("NEW PLAYER:")
+        self.new_player_label.setFixedWidth(300)
+        self.new_player_label.setFont(Qt.QFont("Helvetica [Cronyx]", 30))  # Font family, size, weight
+        self.new_player_label.move(5, 500)
+
+        self.new_player_txt_input = QtWidgets.QLineEdit(self.window)
+        # self.new_player_txt_input.setValidator(QIntValidator())
+        self.new_player_txt_input.setMaxLength(20)
+        self.new_player_txt_input.setFont(Qt.QFont("Helvetica [Cronyx]",20))
+        self.new_player_txt_input.setFixedWidth(200)
+        self.new_player_txt_input.setFixedHeight(50)
+        self.new_player_txt_input.move(5, 550)
+
+        self.create_player_button = QtWidgets.QPushButton("CREATE", self.window)
+        self.create_player_button.setFixedWidth(75)
+        self.create_player_button.setFixedHeight(63)
+        self.create_player_button.clicked.connect(self.create_player)
+        self.create_player_button.move(205, 546)
+
+
+        self.window.showMaximized()
+        self.show_select_player_view()
         sys.exit(self.app.exec_())
+
+    def hide_all_elements(self):
+        # self.view_label.hide()
+        self.game_image_label.hide()
+        self.game_message_label.hide()
+        self.game_score_label.hide()
+        self.game_latency_label.hide()
+        self.start_game_button.hide()
+        self.end_game_button.hide()
+        self.new_player_txt_input.hide()
+        self.create_player_button.hide()
+        self.select_player_dropdown.hide()
+        self.new_player_label.hide()
+        self.existing_player_label.hide()
+        self.select_player_button.hide()
+
+    def show_select_player_view(self):
+        self.view_label.setText("SELECT PLAYER")
+        self.hide_all_elements()
+        self.new_player_txt_input.show()
+        self.create_player_button.show()
+        self.select_player_dropdown.show()
+        self.new_player_label.show()
+        self.existing_player_label.show()
+        self.select_player_button.show()
+
+        for player in UserManager.player_list():
+            self.select_player_dropdown.addItem(player[1], player[0])
+
+    def create_player(self):
+        if self.new_player_txt_input.text() is not None:
+            UserManager.create_player(self.new_player_txt_input.text())
+        self.new_player_txt_input.setText("")
+        self.select_player_dropdown.clear()
+        self.show_select_player_view()
+
+    def select_player(self):
+        self.current_player['name'] = self.select_player_dropdown.currentText()
+        self.current_player['id'] = self.select_player_dropdown.currentData()
+        print("PLAYER SELECTED:")
+        print(self.current_player)
+        self.show_menu_view()
+
+    def show_menu_view(self):
+        self.view_label.setText("Welcome, " + str(self.current_player['name']))
+        self.hide_all_elements()
+        self.start_game_button.show()
+
+        # for player in UserManager.player_list():
+        #     self.select_player_dropdown.addItem(player[1], player[0])
+
+    def show_highscores(self):
+        print("MY SCORES!")
+
+    def show_current_player_scores(self):
+        print("MY SCORES!")
+
+    def show_game_view(self):
+        self.view_label.setText("GAME ON!")
+        self.hide_all_elements()
+        self.game_image_label.show()
+        self.game_message_label.show()
+        self.game_score_label.show()
+        self.game_latency_label.show()
+        self.end_game_button.show()
+
+        # for player in UserManager.player_list():
+        #     self.select_player_dropdown.addItem(player[1], player[0])
 
     def start_game(self):
         if self.game is None or self.game.gameOn is False:
