@@ -153,9 +153,6 @@ class GameManager:
             obstacle_x = float(obstacle_position[0])
             obstacle_y = float(obstacle_position[1])
 
-        # print("Ball:    " + str(ball_x) + ", " + str(ball_y))
-        # print("Obstacle:" + str(obstacle_x) + ", " + str(obstacle_y))
-
         # Check for collision
         if obstacle_x is not None and obstacle_y is not None and \
                 ((obstacle_x - radius) <= ball_x <= (obstacle_x + radius)) and \
