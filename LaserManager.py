@@ -8,9 +8,8 @@ try:
     gpio_module_present = True
 except ImportError:
     gpio_module_present = False
-    print ("GPIO Module not present.")
-import time
-import sys
+    print ("Warning: GPIO Module not present! Hardware features disabled.")
+import unittest
 import math
 
 from Properties import Properties

@@ -3,16 +3,6 @@
 
 import MySQLdb
 
-
-class UserManager:
-    # def __init__(self):
-    print("Hi")
-    #     self.selected_player_id = None
-
-
-    # def select_player(self, id):
-    #     self.selected_player_id = id
-
 DB_HOST = "localhost"
 DB_USER = "user"
 DB_PASSWORD = "user"
@@ -54,6 +44,7 @@ def score_list():
     db.close()
     return scores
 
+
 def highscores():
     db = MySQLdb.connect(DB_HOST,
                          DB_USER,
@@ -70,17 +61,31 @@ def highscores():
     return highscores
 
 
-
 def save_score(player_id, player_name, score):
-    db = MySQLdb.connect(DB_HOST,
-                         DB_USER,
-                         DB_PASSWORD,
-                         DB_NAME)
-    cursor = db.cursor()
-    cursor.execute('INSERT INTO scores (player_id, player_name, score) VALUES (%(player_id)s, %(player_name)s, %(score)s)',
-                   {'player_id': player_id, 'player_name': player_name, 'score': score})
-    db.commit()
-    db.close()
+
+    if type(player_id) is not int \
+            or type(player_name) is not str \
+            or type(score) is not int:
+        return False
+
+    try:
+        db = MySQLdb.connect(DB_HOST,
+                             DB_USER,
+                             DB_PASSWORD,
+                             DB_NAME)
+        cursor = db.cursor()
+        cursor.execute('INSERT INTO scores (player_id, player_name, score) VALUES (%(player_id)s, %(player_name)s, %(score)s)',
+                       {'player_id': player_id, 'player_name': player_name, 'score': score})
+        db.commit()
+
+    except MySQLdb.IntegrityError:
+        print("Failed to insert values: ", player_id, ", ", player_name, ", ", score)
+        return False
+
+    finally:
+        db.close()
+
+    return True
 
 
 def create_player(player_name):
@@ -204,7 +209,7 @@ def seed():
 
 # --------------------------------
 # Main Program
-reset_database()
+# reset_database()
 # print(player_list())
 # print("-" * 40)
 # print(score_list())
