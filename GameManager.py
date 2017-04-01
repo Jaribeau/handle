@@ -138,6 +138,8 @@ class GameManager:
 
     # called by GameManager
     def collides_with(self, ball_position, obstacle_position, radius):
+        if radius is None:
+            radius = 0
 
         if ball_position[0] is None or ball_position[1] is None:
             ball_x = None
@@ -149,6 +151,7 @@ class GameManager:
         if obstacle_position[0] is None or obstacle_position[1] is None:
             obstacle_x = None
             obstacle_y = None
+            return False
         else:
             obstacle_x = float(obstacle_position[0])
             obstacle_y = float(obstacle_position[1])

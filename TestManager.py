@@ -45,12 +45,13 @@ class TestCollidesWith(unittest.TestCase):
 
         # Statement, branch, condition, and path coverage
         # collides_with(self, ball_position, obstacle_position, radius)
-        
+
         # Ensure each varying branch path is followed
         self.assertFalse(gm.collides_with((0, 0), (0, 0), 0))
         self.assertTrue(gm.collides_with((0, 0), (0, 0), 10))
         self.assertFalse(gm.collides_with((None, None), (0, 0), 10))
         self.assertFalse(gm.collides_with((0, 0), (None, None), 10))
+        self.assertTrue(gm.collides_with((0, 0), (0, 0), None))
 
         # Collisions, checking that all axis collision combinations are checked
         self.assertTrue(gm.collides_with((5, 5), (4, 4), 1))
