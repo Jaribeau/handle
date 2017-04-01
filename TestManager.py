@@ -8,5 +8,11 @@ class TestLaserManagerMethods(unittest.TestCase):
         from LaserManager import LaserManager
         lm = LaserManager()
         # self.assertEqual(LaserManager.toPolarCoords(0,0), )
-        print(lm.toPolarCoords(1,1))
+        print(lm.toPolarCoords(1, 1))
+
+
+
+# --------------------------------
+if __name__ == '__main__':
+    unittest.main()
 
