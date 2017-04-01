@@ -181,3 +181,6 @@ class ObstacleManager:
     def set_speed(self, newSpeed):
         self.speed = newSpeed
 
+    def set_period(self, newPeriod):
+        self.period = newPeriod
+
