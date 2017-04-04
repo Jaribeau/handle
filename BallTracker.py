@@ -13,14 +13,12 @@ class BallTracker:
     # Singleton instance
     instance = None
 
-
     @staticmethod
     def get_instance():
         if BallTracker.instance is None:
             BallTracker.instance = BallTracker()
 
         return BallTracker.instance
-
 
 
     def __init__(self):
@@ -46,7 +44,6 @@ class BallTracker:
                   "Use BallTracker.get_instance() instead.")
 
 
-
     def start_ball_tracking(self):
         # TODO: Handle case where already started
 
@@ -58,50 +55,51 @@ class BallTracker:
         t1.start()
 
 
-
     def stop_ball_tracking(self):
         self.ballTrackingEnabled = False
 
+
     # Only to be run on its own thread
-    def track_ball(self, video=""):
+    def track_ball(self):
 
         print ('Started camera ball tracking')
         print (cv2.__version__)
-        # define the lower and upper boundaries of the "green"
-        # ball in the HSV color space, then initialize the
-        # list of tracked points
-        # For HSV, Hue range is [0,179], Saturation range is [0,255] and Value range is [0,255]
+
+        # -------------------------------
+        # -------- TUNING SETUP ---------
+        # -------------------------------
+        # Set HSV color range thresholds
         # HSV Info: http://infohost.nmt.edu/tcc/help/pubs/colortheory/web/hsv.html
+        # (Hue, Saturation, Value)
+        # For HSV, Hue range is [0,179], Saturation range is [0,255] and Value range is [0,255]
         yellow_lower_threshold = (160, 100, 40)
         yellow_upper_threshold = (179, 255, 255)
         red_lower_threshold = (0, 50, 40)
         red_upper_threshold = (40, 255, 255)
         index = 0   # Index in the round queue
-        
-        # if a video path was not supplied, grab the reference
-        # to the webcam
-        if not video:
-            camera = cv2.VideoCapture(0)
 
-        # otherwise, grab a reference to the video file
-        else:
-            camera = cv2.VideoCapture(video)
+        # -------------------------------
+        # ------- VIDEO FEED SETUP ------
+        # -------------------------------
+        camera = cv2.VideoCapture(0)
+        if camera is None:
+            self.stop_ball_tracking()
+            print("Camera not found.")
 
-        # keep looping
+        # -------------------------------
+        # ------- TRACK DAT BALL --------
+        # -------------------------------
+        # Ball tracking algorithm inspired by Adrian Rosebrock @ PyImageSearch.com
+        # http://www.pyimagesearch.com/2015/09/14/ball-tracking-with-opencv/
+
         while self.ballTrackingEnabled:
 
-            # grab the current frame and track the processing time
+            # Grab the current frame and track the processing time
             processing_start_time = time.clock()
-            (grabbed, frame_distorted) = camera.read() # grab the current frame
+            (grabbed, frame_distorted) = camera.read()
             destination_img_size = (Properties.GRID_SIZE_X, Properties.GRID_SIZE_Y, 3)
 
-            # Grab the obstacle location the corresponds to the timing of THIS frame
-            if index < 20:
-                index += 1
-            else:
-                index = 0
-
-            # Before beginning the processing (i.e. introducing lag), notify subscribers that a new frame has been grabbed
+            # Before beginning the processing notify subscribers that a new frame has been grabbed
             self.push_notification(new_frame_being_processed=True)
 
             # Deskew the camera input to make the playing field a grid
@@ -111,35 +109,21 @@ class BallTracker:
             else:
                 frame = frame_distorted
 
-            # End of video
-            if video and not grabbed:
-                break
-
-            # resize the frame, blur it, and convert it to the HSV
-            # color space
-            # blurred = cv2.GaussianBlur(frame, (11, 11), 0)
+            # Convert to HSV color mode
             hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)                                      # Pi Processing time test: 0.001
 
-            # construct a mask for the color "orange", then perform
-            # a series of dilations and erosions to remove any small                           # Pi Processing time test: 0.04
-            # blobs left in the mask
-            mask_red = cv2.inRange(hsv, red_lower_threshold, red_upper_threshold)              # Pi Processing time test: (0.02)
+            # Create a mask containing only the areas that fall within the HSV thresholds       # Pi Processing time test: 0.04
+            mask_red = cv2.inRange(hsv, red_lower_threshold, red_upper_threshold)
             mask_yellow = cv2.inRange(hsv, yellow_lower_threshold, yellow_upper_threshold)
             mask = mask_red + mask_yellow
-            # mask = mask_yellow
+
+            # Perform erosion and dilation to smooth out blobs
             mask = cv2.erode(mask, None, iterations=2)
             mask = cv2.dilate(mask, None, iterations=2)
 
-            # find contours in the mask and initialize the current
-            # (x, y) center of the ball
+            # Find largest contour
             contours = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[-2]            # 0.03
-            center = None
-
-            # only proceed if at least one contour was found
             if len(contours) > 0:
-                # find the largest contour in the mask, then use
-                # it to compute the minimum enclosing circle and
-                # centroid
                 c = max(contours, key=cv2.contourArea)
                 ((x, y), radius) = cv2.minEnclosingCircle(c)
                 M = cv2.moments(c)
@@ -147,17 +131,11 @@ class BallTracker:
                 self.xBallPosition = center[0]
                 self.yBallPosition = center[1]
 
-                # only proceed if the radius meets a minimum size
+                # Proceed if the radius meets a minimum size
                 if radius > 1:
-                    # draw the circle and centroid on the frame,
-                    # then update the list of tracked points
-                    # cv2.circle(img, center, radius, color[, thickness[, lineType[, shift]]]) returns: img
-
                     cv2.circle(frame, center, int(Properties.BALL_RADIUS), (0, 255, 255), 1)
-                    # cv2.circle(frame, (int(x), int(y)), int(radius), (0, 255, 255), 5)
-                    # cv2.circle(frame, center, int(Properties.BALL_RADIUS * Properties.GRID_SIZE_X / 5), (0, 255, 255), -1)
 
-            # send update of ball location
+            # Send update of ball location
             processing_time = time.clock() - processing_start_time
             self.lastUpdated = time.clock()
             if self.yBallPosition is not None:
@@ -177,10 +155,8 @@ class BallTracker:
         print ("Ball tracking stopped.")
 
 
-
     def get_ball_radius(self):
         return self.ballRadius
-
 
 
     # Observer Functions

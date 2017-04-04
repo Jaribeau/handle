@@ -42,7 +42,6 @@ class GameManager:
             self.buzzerPwm = GPIO.PWM(self.BUZZ_PIN, self.BUZZ_FREQ)
 
 
-
     def start_game(self):
         print ("Starting Game!!!")
         print ("----------------")
@@ -52,13 +51,11 @@ class GameManager:
         self.obstacle.set_mode("fixed")
         self.start_time = time.clock()
         self.gameOn = True
-        # self.window = cv2.namedWindow("WebcamWindow")
 
         print("Starting update_game thread.")
         mainGameThread = threading.Thread(target=self.update_game)
         mainGameThread.daemon = True
         mainGameThread.start()
-
 
 
     def update_game(self):
@@ -84,11 +81,8 @@ class GameManager:
 
                 # Regular gameplay
                 if self.frame is not None:
-                    # cv2.putText(self.frame, "Score:" + str(self.score), (5, 10), cv2.FONT_ITALIC, 0.5, 255)
-                    # cv2.putText(self.frame, "o", (int(self.obstacle.xPosition * Properties.GRID_SIZE_X)-25, Properties.GRID_SIZE_Y - int(self.obstacle.yPosition * Properties.GRID_SIZE_Y)+20), cv2.FONT_HERSHEY_SIMPLEX, 3, 0)
                     cv2.circle(self.frame, (int(self.obstacle.xPosition), Properties.GRID_SIZE_Y - int(self.obstacle.yPosition)), int(Properties.BALL_RADIUS), (255, 0, 255), 1)
                     self.frame = imutils.resize(self.frame, width=Properties.GRID_DISPLAY_SIZE_X)
-                    # cv2.imshow(self.window, self.frame)
 
                 if self.timeElapsed > 5 and self.collides_with([self.ballTracker.xBallPosition, self.ballTracker.yBallPosition], [self.obstacle_x, self.obstacle_y], Properties.BALL_RADIUS):
                     print("------- Collision!!! -------- SCORE: -", self.score)
@@ -123,7 +117,6 @@ class GameManager:
                 self.game_up_to_date = True
 
 
-
     def end_game(self):
         print ("Game Over.")
         if self.gameOn is True:
@@ -133,7 +126,6 @@ class GameManager:
             self.ballTracker.stop_ball_tracking()
             self.unregister_all()
             self.timeElapsed = 0
-
 
 
     # called by GameManager
@@ -149,8 +141,6 @@ class GameManager:
             ball_y = float(ball_position[1])
 
         if obstacle_position[0] is None or obstacle_position[1] is None:
-            obstacle_x = None
-            obstacle_y = None
             return False
         else:
             obstacle_x = float(obstacle_position[0])
@@ -194,8 +184,8 @@ class GameManager:
             self.obstacle_y = self.obstacle.yPosition
 
         # # TODO: CHECK ARGUMENTS TO DETERMINE MESSAGE/TYPE - pass on to handlers?
-        # if keywordargs.get('x') is not None and keywordargs.get('y') is not None:
-        #     self.game_up_to_date = False
+        if keywordargs.get('x') is not None and keywordargs.get('y') is not None:
+            self.game_up_to_date = False
 
         self.game_up_to_date = False
 

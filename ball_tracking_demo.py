@@ -25,15 +25,14 @@ args = vars(ap.parse_args())
 # -------------------------------
 # -------- TUNING SETUP ---------
 # -------------------------------
-# define the lower and upper boundaries of the "green"
-# ball in the HSV color space, then initialize the
-# list of tracked points
-# For HSV, Hue range is [0,179], Saturation range is [0,255] and Value range is [0,255]
+# Set HSV color range thresholds
 # HSV Info: http://infohost.nmt.edu/tcc/help/pubs/colortheory/web/hsv.html
-yellowLowerThreshold = (170, 100, 140)
-yellowUpperThreshold = (179, 255, 255)
-redLowerThreshold = (0, 100, 140) 
-redUpperThreshold = (20, 255, 255) 
+# (Hue, Saturation, Value)
+# For HSV, Hue range is [0,179], Saturation range is [0,255] and Value range is [0,255]
+yellow_lower_threshold = (160, 100, 40)
+yellow_upper_threshold = (179, 255, 255)
+red_lower_threshold = (0, 50, 40)
+red_upper_threshold = (40, 255, 255)
 pts = deque(maxlen=args["buffer"])
 # Destination image
 size = (Properties.GRID_SIZE_X, Properties.GRID_SIZE_Y, 3)
@@ -172,7 +171,7 @@ while True:
             # draw the circle and centroid on the frame,
             # then update the list of tracked points
             # cv2.putText(frame, "Hello!", , cvInitFont() ,(0, 255, 255))
-            cv2.putText(frame,"BALL FOUND!", (10, 50), cv2.FONT_ITALIC, 1, 255)
+            # cv2.putText(frame,"BALL FOUND!", (10, 50), cv2.FONT_ITALIC, 1, 255)
             cv2.circle(frame, (int(x), int(y)), int(radius + 1), (0, 255, 255), 1)
             cv2.circle(frame, center, 2, (0, 255, 255), -1)
 

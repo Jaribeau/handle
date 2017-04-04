@@ -1,3 +1,7 @@
+# Perspective correction dot-grabbing code mostly from:
+# https://github.com/spmallick/learnopencv/blob/master/Homography/perspective-correction.py
+
+
 import cv2
 import argparse
 import numpy as np
@@ -90,9 +94,6 @@ while True:
         print ("------ Saved:")
         print (h)
         np.savetxt("deskew_matrix.txt", h)
-        print ("------ Loaded back:")
-        print (np.loadtxt("deskew_matrix.txt"))
-
 
         # Warp source image to destination
         im_dst = cv2.warpPerspective(frame, h, size[0:2])
